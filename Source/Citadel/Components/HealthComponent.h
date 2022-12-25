@@ -30,7 +30,4 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
 
-	UPROPERTY(EditAnywhere)
-	UTextRenderComponent* HealthText;
-
 };
