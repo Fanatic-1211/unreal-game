@@ -3,16 +3,26 @@
 
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/TextRenderComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 
-#include "Engine/Engine.h"
+// #include "Engine/Engine.h"
+#include "Components/HealthComponent.h"
 
 #include "Citadel/Players/PlayerGround.h"
 
 APlayerGround::APlayerGround()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+    HealthComponent = CreateAbstractDefaultSubobject<UHealthComponent>(
+            TEXT("Health"));
+    
+    HealthTextRender = CreateAbstractDefaultSubobject<UTextRenderComponent>(
+            TEXT("HealthRenderer"));
+    HealthTextRender->SetupAttachment(RootComponent);
+    
     
 }
 
@@ -20,6 +30,7 @@ APlayerGround::APlayerGround()
 void APlayerGround::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    UpdateHealthRenderText();
 }
 
 void APlayerGround::BeginPlay()
@@ -62,3 +73,8 @@ void APlayerGround::LookRight(float AxisValue)
     AddControllerYawInput(AxisValue);
 }
 
+
+void APlayerGround::UpdateHealthRenderText()
+{
+	HealthTextRender->SetText(FString::SanitizeFloat(HealthComponent->GetHealth()));
+}

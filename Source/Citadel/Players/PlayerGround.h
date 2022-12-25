@@ -10,6 +10,8 @@
 class UCapsuleComponent;
 class USpringArmComponent;
 class UCameraComponent;
+class UHealthComponent;
+class UTextRenderComponent;
 
 UCLASS()
 class CITADEL_API APlayerGround : public APlayerBase
@@ -33,4 +35,10 @@ protected:
 
 
 private:
+	UHealthComponent* HealthComponent;
+
+	UPROPERTY(EditAnywhere)
+	UTextRenderComponent* HealthTextRender;
+
+	void UpdateHealthRenderText();
 };
