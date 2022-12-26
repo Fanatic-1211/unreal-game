@@ -18,7 +18,6 @@ public:
 
 	float GetHealth() { return CurrentHealth; };
 	void AddHealth(float Value);
-	void RemoveHealth(float Value); 
 
 protected:
 	// Called when the game starts
@@ -29,5 +28,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
+
+	UFUNCTION()
+	void TakeAnyDamage(AActor* DamageActor, float Damage, 
+			const class UDamageType* DamageType, class AController* InstigatedBy,
+			AActor* DamageCauser);
 
 };

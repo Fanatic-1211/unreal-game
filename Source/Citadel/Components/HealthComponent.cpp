@@ -22,6 +22,12 @@ void UHealthComponent::BeginPlay()
 	Super::BeginPlay();
 
 	CurrentHealth = MaxHealth;
+	AActor* ComponentOwner = GetOwner();
+	if (ComponentOwner)
+	{
+		ComponentOwner->OnTakeAnyDamage.AddDynamic(
+				this, &UHealthComponent::TakeAnyDamage);
+	}
 
 }
 
@@ -30,7 +36,9 @@ void UHealthComponent::AddHealth(float Value)
 	CurrentHealth += Value;
 }
 
-void UHealthComponent::RemoveHealth(float Value)
+void UHealthComponent::TakeAnyDamage(AActor* DamageActor, float Damage, 
+			const class UDamageType* DamageType, class AController* InstigatedBy,
+			AActor* DamageCauser)
 {
-	CurrentHealth -= Value;
+	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 }
