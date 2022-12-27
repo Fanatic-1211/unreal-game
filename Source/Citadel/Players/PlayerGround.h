@@ -42,11 +42,15 @@ private:
 	UPROPERTY(EditAnywhere)
 	UTextRenderComponent* HealthTextRender;
 
-	void UpdateHealthRenderText();
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* DeathAnimMontage;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AWeaponBase> WeaponClass;
 
 	UPROPERTY()
 	AWeaponBase* Weapon;
+
+	void UpdateHealthRenderText();
+	void OnDeath();
 };

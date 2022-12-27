@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnDeath); // Делегат, доступный только для С++
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CITADEL_API UHealthComponent : public UActorComponent
@@ -18,6 +19,11 @@ public:
 
 	float GetHealth() { return CurrentHealth; };
 	void AddHealth(float Value);
+
+	FOnDeath OnDeath;
+
+	UFUNCTION(BlueprintPure)
+	bool IsDead();
 
 protected:
 	// Called when the game starts

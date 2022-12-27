@@ -30,12 +30,14 @@ APlayerGround::APlayerGround()
 void APlayerGround::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-    UpdateHealthRenderText();
+    UpdateHealthRenderText(); // TODO: remove from tick and subscribe to delegate
 }
 
 void APlayerGround::BeginPlay()
 {
     Super::BeginPlay(); 
+
+    HealthComponent->OnDeath.AddUObject(this, &APlayerGround::OnDeath); // Subscribe on C++ only delegate 
 
     Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
     Weapon->AttachToComponent(GetMesh(), 
@@ -82,4 +84,11 @@ void APlayerGround::LookRight(float AxisValue)
 void APlayerGround::UpdateHealthRenderText()
 {
 	HealthTextRender->SetText(FString::SanitizeFloat(HealthComponent->GetHealth()));
+}
+
+void APlayerGround::OnDeath()
+{
+    PlayAnimMontage(DeathAnimMontage);
+    // GetCharacterMovement()->DisableMovement();
+    SetLifeSpan(5.f);
 }

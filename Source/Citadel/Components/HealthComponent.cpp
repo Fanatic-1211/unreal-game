@@ -40,5 +40,18 @@ void UHealthComponent::TakeAnyDamage(AActor* DamageActor, float Damage,
 			const class UDamageType* DamageType, class AController* InstigatedBy,
 			AActor* DamageCauser)
 {
+	if (IsDead()) return;
+
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
+
+	if (IsDead())
+	{
+		OnDeath.Broadcast(); // оповещаем всех подписаных
+	}
 }
+
+bool UHealthComponent::IsDead()
+{
+	return CurrentHealth <= 0.0f;
+}
+
