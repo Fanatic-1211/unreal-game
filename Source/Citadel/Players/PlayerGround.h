@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Citadel/Players/PlayerBase.h"
+#include "Weapons/WeaponBase.h"
 
 #include "PlayerGround.generated.h"
 
@@ -12,6 +13,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UHealthComponent;
 class UTextRenderComponent;
+
 
 UCLASS()
 class CITADEL_API APlayerGround : public APlayerBase
@@ -41,4 +43,10 @@ private:
 	UTextRenderComponent* HealthTextRender;
 
 	void UpdateHealthRenderText();
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AWeaponBase> WeaponClass;
+
+	UPROPERTY()
+	AWeaponBase* Weapon;
 };

@@ -35,7 +35,12 @@ void APlayerGround::Tick(float DeltaTime)
 
 void APlayerGround::BeginPlay()
 {
-   Super::BeginPlay(); 
+    Super::BeginPlay(); 
+
+    Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
+    Weapon->AttachToComponent(GetMesh(), 
+        FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket_r"));
+    Weapon->SetOwner(this);
 }
 
 void APlayerGround::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
