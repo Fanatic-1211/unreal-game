@@ -26,25 +26,42 @@ APlayerGround::APlayerGround()
     
 }
 
+void APlayerGround::BeginPlay()
+{
+    Super::BeginPlay(); 
+    PlayerController = GetWorld()->GetFirstPlayerController();
+    PlayerPawn = PlayerController->GetPawn();
+    SetupHealthComponent();
+    SetupWeapon();
+}
+
 // Called every frame
 void APlayerGround::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-    UpdateHealthRenderText(); // TODO: remove from tick and subscribe to delegate
 }
 
-void APlayerGround::BeginPlay()
+// -------------------------------------------------------------------
+
+void APlayerGround::SetupWeapon()
 {
-    Super::BeginPlay(); 
-
-    HealthComponent->OnDeath.AddUObject(this, &APlayerGround::OnDeath); // Subscribe on C++ only delegate 
-
     Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
     Weapon->AttachToComponent(GetMesh(), 
         FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket_r"));
     Weapon->SetOwner(this);
 }
 
+void APlayerGround::SetupHealthComponent()
+{
+    UpdateHealthRenderText(); 
+    HealthComponent->OnDeath.AddUObject(this, &APlayerGround::OnDeath); // Subscribe on C++ only delegate 
+    HealthComponent->OnDamage.AddUObject(this,
+             &APlayerGround::UpdateHealthRenderText);
+}
+
+// --------------------------------------------------
+// INPUT FUNCTIONS
+// --------------------------------------------------
 void APlayerGround::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -80,6 +97,8 @@ void APlayerGround::LookRight(float AxisValue)
     AddControllerYawInput(AxisValue);
 }
 
+// --------------------------------------------------
+
 
 void APlayerGround::UpdateHealthRenderText()
 {
@@ -89,6 +108,9 @@ void APlayerGround::UpdateHealthRenderText()
 void APlayerGround::OnDeath()
 {
     PlayAnimMontage(DeathAnimMontage);
-    // GetCharacterMovement()->DisableMovement();
+    
+    if (PlayerPawn && PlayerController)
+    PlayerPawn->DisableInput(PlayerController);
+
     SetLifeSpan(5.f);
 }

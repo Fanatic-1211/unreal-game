@@ -44,6 +44,8 @@ void UHealthComponent::TakeAnyDamage(AActor* DamageActor, float Damage,
 
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 
+	OnDamage.Broadcast();
+
 	if (IsDead())
 	{
 		OnDeath.Broadcast(); // оповещаем всех подписаных

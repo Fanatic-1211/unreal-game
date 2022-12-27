@@ -38,6 +38,8 @@ protected:
 
 private:
 	UHealthComponent* HealthComponent;
+	AActor* PlayerPawn;
+	APlayerController* PlayerController;
 
 	UPROPERTY(EditAnywhere)
 	UTextRenderComponent* HealthTextRender;
@@ -51,6 +53,8 @@ private:
 	UPROPERTY()
 	AWeaponBase* Weapon;
 
+	void SetupWeapon();
+	void SetupHealthComponent();
 	void UpdateHealthRenderText();
 	void OnDeath();
 };

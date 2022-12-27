@@ -7,6 +7,7 @@
 #include "HealthComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnDeath); // Делегат, доступный только для С++
+DECLARE_MULTICAST_DELEGATE(FOnDamage); 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CITADEL_API UHealthComponent : public UActorComponent
@@ -21,6 +22,7 @@ public:
 	void AddHealth(float Value);
 
 	FOnDeath OnDeath;
+	FOnDamage OnDamage;
 
 	UFUNCTION(BlueprintPure)
 	bool IsDead();
