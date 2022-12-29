@@ -16,12 +16,13 @@ class UTextRenderComponent;
 
 
 UCLASS()
-class CITADEL_API APlayerGround : public APlayerBase
+class CITADEL_API APlayerGround : public ACharacter
 {
 	GENERATED_BODY()
 	
 public:
 	APlayerGround();
+	APlayerGround(const class FObjectInitializer& ObjectInitializer);
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(
@@ -32,6 +33,11 @@ public:
 	void LookUp(float AxisValue);
 	void LookRight(float AxisValue);
 
+	UFUNCTION(BlueprintPure)
+	bool GetCrouching() { return IsCrouching; };
+	UFUNCTION(BlueprintPure)
+	bool GetRunning() { return IsRunning; };
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -40,6 +46,8 @@ private:
 	UHealthComponent* HealthComponent;
 	AActor* PlayerPawn;
 	APlayerController* PlayerController;
+	bool IsCrouching;
+	bool IsRunning;
 
 	UPROPERTY(EditAnywhere)
 	UTextRenderComponent* HealthTextRender;
@@ -57,4 +65,7 @@ private:
 	void SetupHealthComponent();
 	void UpdateHealthRenderText();
 	void OnDeath();
+	void ToggleCrouch();
+	void ToggleRun();
+
 };

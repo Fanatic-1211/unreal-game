@@ -6,13 +6,16 @@
 #include "Components/TextRenderComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/Character.h"
 
-// #include "Engine/Engine.h"
 #include "Components/HealthComponent.h"
+#include "Components/CustomCharacterMovementComponent.h"
 
 #include "Citadel/Players/PlayerGround.h"
 
-APlayerGround::APlayerGround()
+APlayerGround::APlayerGround(const class FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomCharacterMovementComponent>(
+        ACharacter::CharacterMovementComponentName)) // overriding CharacterMovementComponent
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -22,7 +25,6 @@ APlayerGround::APlayerGround()
     HealthTextRender = CreateAbstractDefaultSubobject<UTextRenderComponent>(
             TEXT("HealthRenderer"));
     HealthTextRender->SetupAttachment(RootComponent);
-    
     
 }
 
@@ -74,6 +76,12 @@ void APlayerGround::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
             &APlayerGround::LookUp);
     PlayerInputComponent->BindAxis(TEXT("LookRight"), this, 
             &APlayerGround::LookRight);
+    PlayerInputComponent->BindAction(TEXT("Crouch"), IE_Pressed, this,
+            &APlayerGround::ToggleCrouch);
+    PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this,
+            &APlayerGround::ToggleRun);
+    PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this,
+            &APlayerGround::ToggleRun);
 
 }
 
@@ -113,4 +121,20 @@ void APlayerGround::OnDeath()
     PlayerPawn->DisableInput(PlayerController);
 
     SetLifeSpan(5.f);
+}
+
+void APlayerGround::ToggleCrouch()
+{
+    if (IsRunning == true) 
+    IsRunning = false;
+
+    (IsCrouching == true) ? IsCrouching = false : IsCrouching = true; 
+}
+
+void APlayerGround::ToggleRun()
+{
+    if (IsCrouching == true) 
+    IsCrouching = false;
+
+    (IsRunning == true) ? IsRunning = false : IsRunning = true; 
 }
