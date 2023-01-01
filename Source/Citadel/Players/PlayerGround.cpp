@@ -6,7 +6,6 @@
 #include "Components/TextRenderComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/Character.h"
 
 #include "Components/HealthComponent.h"
 #include "Components/CustomCharacterMovementComponent.h"

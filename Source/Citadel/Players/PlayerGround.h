@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Citadel/Players/PlayerBase.h"
+#include "GameFramework/Character.h"
+
 #include "Weapons/WeaponBase.h"
 
 #include "PlayerGround.generated.h"
