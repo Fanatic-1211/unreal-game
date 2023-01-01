@@ -10,6 +10,7 @@
 
 #include "Components/HealthComponent.h"
 #include "Components/CustomCharacterMovementComponent.h"
+#include "Weapons/WeaponRifle.h"
 
 #include "Citadel/Players/PlayerGround.h"
 
@@ -35,6 +36,7 @@ void APlayerGround::BeginPlay()
     PlayerPawn = PlayerController->GetPawn();
     SetupHealthComponent();
     SetupWeapon();
+
 }
 
 // Called every frame
@@ -82,6 +84,8 @@ void APlayerGround::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
             &APlayerGround::ToggleRun);
     PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this,
             &APlayerGround::ToggleRun);
+    PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this,
+            &APlayerGround::Shoot);
 
 }
 
@@ -137,4 +141,13 @@ void APlayerGround::ToggleRun()
     IsCrouching = false;
 
     (IsRunning == true) ? IsRunning = false : IsRunning = true; 
+}
+
+void APlayerGround::Shoot()
+{
+    Cast<AWeaponRifle>(Weapon)->CastRay();
+	AActor* HittedActor = (Cast<AWeaponRifle>(Weapon)->Hit).GetActor();
+    UE_LOG(LogTemp, Warning, TEXT("Pew!"));
+    if (!HittedActor) return;
+    UE_LOG(LogTemp, Warning, TEXT("Hitted!"));
 }
