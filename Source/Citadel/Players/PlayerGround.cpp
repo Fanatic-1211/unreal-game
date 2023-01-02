@@ -80,8 +80,8 @@ void APlayerGround::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
             &APlayerGround::ToggleRun);
     PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this,
             &APlayerGround::ToggleRun);
-    PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this,
-            &APlayerGround::Shoot);
+    PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, WeaponComponent,
+            &UWeaponComponent::Shoot);
 
 }
 
@@ -139,7 +139,3 @@ void APlayerGround::ToggleRun()
     (IsRunning == true) ? IsRunning = false : IsRunning = true; 
 }
 
-void APlayerGround::Shoot()
-{
-    WeaponComponent->Weapon->Shoot();
-}

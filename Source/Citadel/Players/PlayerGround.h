@@ -66,6 +66,5 @@ private:
 	void OnDeath();
 	void ToggleCrouch();
 	void ToggleRun();
-	void Shoot();
 
 };

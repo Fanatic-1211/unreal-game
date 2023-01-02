@@ -18,8 +18,7 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponBase();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void Shoot();
 
 protected:
 	// Called when the game starts or when spawned

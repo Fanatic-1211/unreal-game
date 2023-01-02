@@ -10,7 +10,7 @@
 AWeaponBase::AWeaponBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	SceneComponent = CreateAbstractDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = SceneComponent;
@@ -27,10 +27,8 @@ void AWeaponBase::BeginPlay()
 	
 }
 
-// Called every frame
-void AWeaponBase::Tick(float DeltaTime)
+void AWeaponBase::Shoot()
 {
-	Super::Tick(DeltaTime);
-
+	
 }
 
