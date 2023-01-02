@@ -21,13 +21,26 @@ public:
 	virtual void Shoot();
 
 protected:
+	FHitResult HitResult;
+
+	void PrepareForShot();
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:	
 	UPROPERTY(EditAnywhere)
+	FName MuzzleSocketName = TEXT("Muzzle_Socket");
+	UPROPERTY(EditAnywhere)
 	USceneComponent* SceneComponent;
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* SkeletalMesh;
+	UPROPERTY(EditDefaultsOnly)
+	int32 WeaponRange = 2000;
+
+	FVector TraceStart;
+	FVector TraceDirection;
+	FVector TraceEnd;
+
 
 };

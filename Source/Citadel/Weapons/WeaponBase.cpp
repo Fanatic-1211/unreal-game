@@ -5,6 +5,7 @@
 #include "Components/SceneComponent.h"
 #include "Weapons/WeaponBase.h"
 
+#define OUT
 
 // Sets default values
 AWeaponBase::AWeaponBase()
@@ -29,6 +30,32 @@ void AWeaponBase::BeginPlay()
 
 void AWeaponBase::Shoot()
 {
+	PrepareForShot();
+	UE_LOG(LogTemp, Warning, TEXT("Pew!"));
+
+	if (!HitResult.bBlockingHit) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("%s was hitted!"), *HitResult.Actor->GetName());
+	
+}
+
+// Get initial parametars for shot
+void AWeaponBase::PrepareForShot()
+{
+	if (!GetWorld()) return;
+
+	FVector PlayerViewportLocation;
+	FRotator PlayerViewportRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		PlayerViewportLocation, PlayerViewportRotation);
+
+	TraceStart = PlayerViewportLocation;
+	TraceDirection = PlayerViewportRotation.Vector();
+	TraceEnd = TraceStart + TraceDirection * WeaponRange;
+
+	FCollisionQueryParams TraceParams(TEXT(""), false, GetOwner()); // Ignore TraceOwner Collision
+	GetWorld()->LineTraceSingleByChannel(OUT HitResult, TraceStart, TraceEnd,
+			ECollisionChannel::ECC_Visibility, TraceParams);
 	
 }
 
