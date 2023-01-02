@@ -22,3 +22,12 @@ void AWeaponRifle::GetCharacterPositionParams()
     GetWorld()->GetFirstPlayerController()->
         GetPlayerViewPoint(OUT CharacterLocation, OUT CharacterRotation);
 }
+
+void AWeaponRifle::Shoot() 
+{
+    CastRay();
+	AActor* HittedActor = Hit.GetActor();
+    UE_LOG(LogTemp, Warning, TEXT("Pew!"));
+    if (!HittedActor) return;
+    UE_LOG(LogTemp, Warning, TEXT("Hitted!"));
+}

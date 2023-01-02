@@ -17,6 +17,7 @@ class CITADEL_API AWeaponRifle : public AWeaponBase
 public:
 	FHitResult Hit;
 	void CastRay();
+	virtual void Shoot() override;
 
 private:
 	UPROPERTY(EditDefaultsOnly)

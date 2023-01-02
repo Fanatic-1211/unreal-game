@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 
 #include "Components/HealthComponent.h"
+#include "Components/WeaponComponent.h"
 #include "Components/CustomCharacterMovementComponent.h"
 #include "Weapons/WeaponRifle.h"
 
@@ -25,6 +26,9 @@ APlayerGround::APlayerGround(const class FObjectInitializer& ObjectInitializer)
     HealthTextRender = CreateAbstractDefaultSubobject<UTextRenderComponent>(
             TEXT("HealthRenderer"));
     HealthTextRender->SetupAttachment(RootComponent);
+
+    WeaponComponent = CreateAbstractDefaultSubobject<UWeaponComponent>(
+            TEXT("WeaponComponent"));
     
 }
 
@@ -33,8 +37,8 @@ void APlayerGround::BeginPlay()
     Super::BeginPlay(); 
     PlayerController = GetWorld()->GetFirstPlayerController();
     PlayerPawn = PlayerController->GetPawn();
+
     SetupHealthComponent();
-    SetupWeapon();
 
 }
 
@@ -46,13 +50,6 @@ void APlayerGround::Tick(float DeltaTime)
 
 // -------------------------------------------------------------------
 
-void APlayerGround::SetupWeapon()
-{
-    Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
-    Weapon->AttachToComponent(GetMesh(), 
-        FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket_r"));
-    Weapon->SetOwner(this);
-}
 
 void APlayerGround::SetupHealthComponent()
 {
@@ -144,9 +141,5 @@ void APlayerGround::ToggleRun()
 
 void APlayerGround::Shoot()
 {
-    Cast<AWeaponRifle>(Weapon)->CastRay();
-	AActor* HittedActor = (Cast<AWeaponRifle>(Weapon)->Hit).GetActor();
-    UE_LOG(LogTemp, Warning, TEXT("Pew!"));
-    if (!HittedActor) return;
-    UE_LOG(LogTemp, Warning, TEXT("Hitted!"));
+    WeaponComponent->Weapon->Shoot();
 }

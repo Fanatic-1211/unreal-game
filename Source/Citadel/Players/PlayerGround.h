@@ -14,6 +14,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UHealthComponent;
 class UTextRenderComponent;
+class UWeaponComponent;
 
 
 UCLASS()
@@ -40,11 +41,12 @@ public:
 	bool GetRunning() { return IsRunning; };
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UHealthComponent* HealthComponent;
+
 	virtual void BeginPlay() override;
 
-
 private:
-	UHealthComponent* HealthComponent;
 	AActor* PlayerPawn;
 	APlayerController* PlayerController;
 	bool IsCrouching;
@@ -53,16 +55,12 @@ private:
 	UPROPERTY(EditAnywhere)
 	UTextRenderComponent* HealthTextRender;
 
+	UPROPERTY(EditAnywhere)
+	UWeaponComponent* WeaponComponent;
+
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* DeathAnimMontage;
 
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AWeaponBase> WeaponClass;
-
-	UPROPERTY()
-	AWeaponBase* Weapon;
-
-	void SetupWeapon();
 	void SetupHealthComponent();
 	void UpdateHealthRenderText();
 	void OnDeath();
