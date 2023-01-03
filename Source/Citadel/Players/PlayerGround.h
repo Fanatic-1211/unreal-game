@@ -26,6 +26,9 @@ public:
 	APlayerGround();
 	APlayerGround(const class FObjectInitializer& ObjectInitializer);
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UHealthComponent* HealthComponent;
+
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(
 		class UInputComponent* PlayerInputComponent) override;
@@ -41,8 +44,6 @@ public:
 	bool GetRunning() { return IsRunning; };
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-	UHealthComponent* HealthComponent;
 
 	virtual void BeginPlay() override;
 

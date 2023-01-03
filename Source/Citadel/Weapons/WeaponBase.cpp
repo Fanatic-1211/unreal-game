@@ -49,9 +49,9 @@ void AWeaponBase::PrepareForShot()
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
 		PlayerViewportLocation, PlayerViewportRotation);
 
-	TraceStart = PlayerViewportLocation;
-	TraceDirection = PlayerViewportRotation.Vector();
-	TraceEnd = TraceStart + TraceDirection * WeaponRange;
+	FVector TraceStart = PlayerViewportLocation;
+	FVector TraceDirection = PlayerViewportRotation.Vector();
+	FVector TraceEnd = TraceStart + TraceDirection * WeaponRange;
 
 	FCollisionQueryParams TraceParams(TEXT(""), false, GetOwner()); // Ignore TraceOwner Collision
 	GetWorld()->LineTraceSingleByChannel(OUT HitResult, TraceStart, TraceEnd,

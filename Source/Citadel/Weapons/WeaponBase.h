@@ -35,12 +35,7 @@ private:
 	USceneComponent* SceneComponent;
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* SkeletalMesh;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Weapon Parameters")
 	int32 WeaponRange = 2000;
-
-	FVector TraceStart;
-	FVector TraceDirection;
-	FVector TraceEnd;
-
 
 };

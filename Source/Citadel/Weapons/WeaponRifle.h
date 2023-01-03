@@ -18,5 +18,7 @@ public:
 	virtual void Shoot() override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category="Weapon Parameters")
+	float WeaponDamage = 10.f;
 
 };

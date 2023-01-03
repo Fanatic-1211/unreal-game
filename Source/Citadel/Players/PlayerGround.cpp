@@ -118,7 +118,10 @@ void APlayerGround::OnDeath()
     PlayAnimMontage(DeathAnimMontage);
     
     if (PlayerPawn && PlayerController)
-    PlayerPawn->DisableInput(PlayerController);
+    GetCharacterMovement()->DisableMovement();
+
+    GetCapsuleComponent()->SetCollisionResponseToAllChannels(
+        ECollisionResponse::ECR_Ignore);
 
     SetLifeSpan(5.f);
 }
