@@ -5,6 +5,7 @@
 #include "Components/InputComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/Controller.h"
 #include "Camera/CameraComponent.h"
 
 #include "Components/HealthComponent.h"
@@ -105,6 +106,23 @@ void APlayerGround::LookRight(float AxisValue)
     AddControllerYawInput(AxisValue);
 }
 
+void APlayerGround::ToggleCrouch()
+{
+    if (IsRunning == true) 
+    IsRunning = false;
+
+    (IsCrouching == true) ? IsCrouching = false : IsCrouching = true; 
+}
+
+void APlayerGround::ToggleRun()
+{
+    if (IsCrouching == true) 
+    IsCrouching = false;
+
+    (IsRunning == true) ? IsRunning = false : IsRunning = true; 
+}
+
+
 // --------------------------------------------------
 
 
@@ -123,22 +141,8 @@ void APlayerGround::OnDeath()
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(
         ECollisionResponse::ECR_Ignore);
 
+    if (Controller)
+    Controller->ChangeState(NAME_Spectating);
+
     SetLifeSpan(5.f);
 }
-
-void APlayerGround::ToggleCrouch()
-{
-    if (IsRunning == true) 
-    IsRunning = false;
-
-    (IsCrouching == true) ? IsCrouching = false : IsCrouching = true; 
-}
-
-void APlayerGround::ToggleRun()
-{
-    if (IsCrouching == true) 
-    IsCrouching = false;
-
-    (IsRunning == true) ? IsRunning = false : IsRunning = true; 
-}
-
