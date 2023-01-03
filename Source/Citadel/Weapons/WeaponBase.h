@@ -23,7 +23,8 @@ public:
 protected:
 	FHitResult HitResult;
 
-	void PrepareForShot();
+	virtual void PrepareForShot();
+	virtual void SpawnEffects();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,5 +38,11 @@ private:
 	USkeletalMeshComponent* SkeletalMesh;
 	UPROPERTY(EditDefaultsOnly, Category="Weapon Parameters")
 	int32 WeaponRange = 2000;
+
+	UPROPERTY(EditAnywhere, Category = "FX")
+	UParticleSystem* MuzzleFlashParticle;
+
+	UPROPERTY(EditAnywhere, Category="FX")
+	USoundBase* ShotSound;
 
 };

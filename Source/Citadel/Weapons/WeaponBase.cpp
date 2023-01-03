@@ -1,8 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "Particles/ParticleSystem.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 #include "Weapons/WeaponBase.h"
 
 #define OUT
@@ -56,6 +59,21 @@ void AWeaponBase::PrepareForShot()
 	FCollisionQueryParams TraceParams(TEXT(""), false, GetOwner()); // Ignore TraceOwner Collision
 	GetWorld()->LineTraceSingleByChannel(OUT HitResult, TraceStart, TraceEnd,
 			ECollisionChannel::ECC_Visibility, TraceParams);
-	
+
+	SpawnEffects();
+
+}
+
+void AWeaponBase::SpawnEffects()
+{
+	if (MuzzleFlashParticle && ShotSound)
+	{
+		UGameplayStatics::SpawnEmitterAttached(MuzzleFlashParticle, SkeletalMesh, MuzzleSocketName);
+		UGameplayStatics::SpawnSoundAttached(ShotSound, SkeletalMesh, MuzzleSocketName);
+	} else
+	{
+		UE_LOG(LogTemp, Error, TEXT(
+			"%s: Shot Sound or MuzzleFlash Effect doesn't set!"), *this->GetName());
+	}
 }
 
