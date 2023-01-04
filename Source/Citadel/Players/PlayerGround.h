@@ -43,6 +43,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	bool GetRunning() { return IsRunning; };
 
+	UFUNCTION(BlueprintCallable, Category="TextRender")
+	void UpdateHealthRenderText();
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -63,9 +66,9 @@ private:
 	UAnimMontage* DeathAnimMontage;
 
 	void SetupHealthComponent();
-	void UpdateHealthRenderText();
 	void OnDeath();
 	void ToggleCrouch();
 	void ToggleRun();
+
 
 };

@@ -6,8 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnDeath); // Делегат, доступный только для С++
-DECLARE_MULTICAST_DELEGATE(FOnDamage); 
+DECLARE_MULTICAST_DELEGATE(FOnDeath); // Delegate for C++ only 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamage); // Delegate for Blueprints and C++ 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CITADEL_API UHealthComponent : public UActorComponent

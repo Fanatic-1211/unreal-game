@@ -56,8 +56,8 @@ void APlayerGround::SetupHealthComponent()
 {
     UpdateHealthRenderText(); 
     HealthComponent->OnDeath.AddUObject(this, &APlayerGround::OnDeath); // Subscribe on C++ only delegate 
-    HealthComponent->OnDamage.AddUObject(this,
-             &APlayerGround::UpdateHealthRenderText);
+    HealthComponent->OnDamage.AddDynamic(this,
+             &APlayerGround::UpdateHealthRenderText); // Subscribe on universal delegate
 }
 
 // --------------------------------------------------
@@ -128,7 +128,7 @@ void APlayerGround::ToggleRun()
 
 void APlayerGround::UpdateHealthRenderText()
 {
-	HealthTextRender->SetText(FString::SanitizeFloat(HealthComponent->GetHealth()));
+        HealthTextRender->SetText(FString::SanitizeFloat(HealthComponent->GetHealth()));
 }
 
 void APlayerGround::OnDeath()
