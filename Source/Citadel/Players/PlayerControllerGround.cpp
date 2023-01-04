@@ -8,7 +8,4 @@
 
 void APlayerControllerGround::BeginPlay()
 {
-    UUserWidget* AimCross = CreateWidget(this, AimCrossClass);
-    if (AimCross)
-    AimCross->AddToViewport();
 }

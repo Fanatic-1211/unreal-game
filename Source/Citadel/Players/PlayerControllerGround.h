@@ -19,8 +19,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> AimCrossClass;
 
 };
 

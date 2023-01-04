@@ -18,7 +18,11 @@ public:
 	// Sets default values for this component's properties
 	UHealthComponent();
 
+	UFUNCTION(BlueprintPure)
 	float GetHealth() { return CurrentHealth; };
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercent() { return GetHealth() / MaxHealth; };
+
 	void AddHealth(float Value);
 
 	FOnDeath OnDeath;
@@ -31,7 +35,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta = (ClampMin = "0.0", ClampMax = "1000.0"))
-	float MaxHealth = 100;
+	float MaxHealth = 100.f;
 
 private:
 	float CurrentHealth = 0.f;

@@ -36,6 +36,7 @@ void UHealthComponent::AddHealth(float Value)
 	CurrentHealth += Value;
 }
 
+
 void UHealthComponent::TakeAnyDamage(AActor* DamageActor, float Damage, 
 			const class UDamageType* DamageType, class AController* InstigatedBy,
 			AActor* DamageCauser)
