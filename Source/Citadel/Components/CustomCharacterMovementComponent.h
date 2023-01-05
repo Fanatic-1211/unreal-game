@@ -20,8 +20,8 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Movement",
 			meta=(ClampMin="0"));
-	float RunningModifier;
+	float RunningModifier = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category="Movement",
 			meta=(ClampMin="0"));
-	float CrouchingModifier;
+	float CrouchingModifier = 0.85f;
 };
