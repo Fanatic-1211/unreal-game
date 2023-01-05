@@ -13,5 +13,7 @@ UCLASS()
 class CITADEL_API AAIControllerGround : public AAIController
 {
 	GENERATED_BODY()
-	
+
+protected:
+	virtual void OnPossess(APawn* InPawn) override;
 };
