@@ -22,5 +22,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
 	UPerceptionComponent* PerceptionComponentGround;
 
+	virtual void Tick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
+
+private:
+	AActor* ClosestEnemy;
 };

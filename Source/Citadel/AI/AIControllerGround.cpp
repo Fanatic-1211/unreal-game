@@ -13,6 +13,11 @@ AAIControllerGround::AAIControllerGround()
     SetPerceptionComponent(*PerceptionComponentGround);
 }
 
+void AAIControllerGround::Tick(float DeltaTime)
+{
+    ClosestEnemy = PerceptionComponentGround->GetClosestEnemy();
+}
+
 void AAIControllerGround::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);

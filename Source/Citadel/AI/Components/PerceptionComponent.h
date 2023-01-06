@@ -14,4 +14,6 @@ class CITADEL_API UPerceptionComponent : public UAIPerceptionComponent
 {
 	GENERATED_BODY()
 	
+public: 
+	AActor* GetClosestEnemy() const;
 };
