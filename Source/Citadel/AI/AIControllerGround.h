@@ -9,11 +9,18 @@
 /**
  * 
  */
+class UPerceptionComponent;
 UCLASS()
 class CITADEL_API AAIControllerGround : public AAIController
 {
 	GENERATED_BODY()
 
+public:
+	AAIControllerGround();
+
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
+	UPerceptionComponent* PerceptionComponentGround;
+
 	virtual void OnPossess(APawn* InPawn) override;
 };

@@ -2,8 +2,16 @@
 
 
 #include "AI/AIControllerGround.h"
+#include "AI/Components/PerceptionComponent.h"
 #include "AI/AIGround.h"
 
+
+AAIControllerGround::AAIControllerGround()
+{
+    PerceptionComponentGround = CreateDefaultSubobject<UPerceptionComponent>(
+        TEXT("PerceptionComponentGround"));
+    SetPerceptionComponent(*PerceptionComponentGround);
+}
 
 void AAIControllerGround::OnPossess(APawn* InPawn)
 {
