@@ -14,9 +14,12 @@ UCLASS()
 class CITADEL_API AAIGround : public APlayerGround
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void OnDeath() override;
 	
 public:
-	// virtual void BeginPlay() override;
+	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="AI")
 	UBehaviorTree* BehaviorTreeAsset;

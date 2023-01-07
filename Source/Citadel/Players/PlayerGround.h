@@ -49,6 +49,7 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
+	virtual void OnDeath();
 
 private:
 	AActor* PlayerPawn;
@@ -66,7 +67,6 @@ private:
 	UAnimMontage* DeathAnimMontage;
 
 	void SetupHealthComponent();
-	void OnDeath();
 	void ToggleCrouch();
 	void ToggleRun();
 
