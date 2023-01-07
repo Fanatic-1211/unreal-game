@@ -10,6 +10,7 @@
  * 
  */
 class UPerceptionComponent;
+class UBlackboardComponent;
 UCLASS()
 class CITADEL_API AAIControllerGround : public AAIController
 {
@@ -26,5 +27,7 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
 private:
-	AActor* ClosestEnemy;
+	FName EnemyVarNameFromBlackboard = TEXT("CurrentEnemy");
+	AActor* GetEnemyFromBlackboard();
+	UBlackboardComponent* Blackboard;
 };

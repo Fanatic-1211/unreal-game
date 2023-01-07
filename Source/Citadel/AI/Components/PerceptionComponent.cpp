@@ -2,9 +2,11 @@
 
 
 #include "AI/Components/PerceptionComponent.h"
+
 #include "AIController.h"
-#include "Components/HealthComponent.h"
 #include "Perception/AISense_Sight.h"
+
+#include "Components/HealthComponent.h"
 
 
 AActor* UPerceptionComponent::GetClosestEnemy() const
@@ -15,16 +17,19 @@ AActor* UPerceptionComponent::GetClosestEnemy() const
 
     const AAIController* Controller = Cast<AAIController>(GetOwner());
     const APawn* Pawn = Controller->GetPawn();
+    if (!Pawn) return nullptr;
 
     float BestDistance = MAX_FLT;
     AActor* BestEnemy = nullptr;
 
     for (const auto PerceiveActor : PerceivedActors)
     {
-        UHealthComponent* HealthComponent = Cast<UHealthComponent>(
-                Pawn->FindComponentByClass(TSubclassOf<UHealthComponent>()));
+        UHealthComponent* HealthComponent = 
+            PerceiveActor->FindComponentByClass<UHealthComponent>();
+        
         if (HealthComponent && !HealthComponent->IsDead()) 
         {
+
             float CurrentDistance = (
                 Pawn->GetActorLocation() - PerceiveActor->GetActorLocation()).Size();
             if (CurrentDistance < BestDistance)
@@ -34,6 +39,7 @@ AActor* UPerceptionComponent::GetClosestEnemy() const
             }
         }
     }
+
     return BestEnemy;
 
 }

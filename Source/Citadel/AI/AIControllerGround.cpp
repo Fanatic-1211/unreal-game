@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "BehaviorTree/BlackboardComponent.h"
+
 #include "AI/AIControllerGround.h"
 #include "AI/Components/PerceptionComponent.h"
 #include "AI/AIGround.h"
@@ -15,7 +17,8 @@ AAIControllerGround::AAIControllerGround()
 
 void AAIControllerGround::Tick(float DeltaTime)
 {
-    ClosestEnemy = PerceptionComponentGround->GetClosestEnemy();
+    Super::Tick(DeltaTime);
+    SetFocus(GetEnemyFromBlackboard());
 }
 
 void AAIControllerGround::OnPossess(APawn* InPawn)
@@ -27,4 +30,12 @@ void AAIControllerGround::OnPossess(APawn* InPawn)
     {
         RunBehaviorTree(AIGround->BehaviorTreeAsset);
     }
+}
+
+AActor* AAIControllerGround::GetEnemyFromBlackboard()
+{
+    Blackboard = GetBlackboardComponent();
+    if (!Blackboard) return nullptr;
+
+    return Cast<AActor>(Blackboard->GetValueAsObject(EnemyVarNameFromBlackboard));
 }
