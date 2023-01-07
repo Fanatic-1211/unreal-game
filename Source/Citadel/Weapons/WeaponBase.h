@@ -45,4 +45,6 @@ private:
 	UPROPERTY(EditAnywhere, Category="FX")
 	USoundBase* ShotSound;
 
+	void GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint);
+
 };

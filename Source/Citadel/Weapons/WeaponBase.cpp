@@ -28,18 +28,45 @@ AWeaponBase::AWeaponBase()
 void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AWeaponBase::GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint)
+{
+	FVector ViewLocation;
+	FRotator ViewRotation;
+
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn->IsPlayerControlled())
+	{
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+			ViewLocation, ViewRotation);
+	}
+	else
+	{
+		ViewLocation = SkeletalMesh->GetSocketLocation(MuzzleSocketName);
+		ViewRotation = SkeletalMesh->GetSocketRotation(MuzzleSocketName);
+	}
 	
+	StartPoint = ViewLocation;
+	FVector TraceDirection = ViewRotation.Vector();
+	EndPoint = StartPoint + TraceDirection * WeaponRange;
 }
 
 void AWeaponBase::Shoot()
 {
 	PrepareForShot();
-	UE_LOG(LogTemp, Warning, TEXT("Pew!"));
 
-	if (!HitResult.bBlockingHit) return;
-
-	UE_LOG(LogTemp, Warning, TEXT("%s was hitted!"), *HitResult.Actor->GetName());
-	
+	if (HitResult.bBlockingHit)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Pew! %s hits %s!"), 
+				*GetOwner()->GetName(), *HitResult.Actor->GetName());
+	}
+	else
+	{ 
+		UE_LOG(LogTemp, Display, TEXT("Pew! %s hits nothing!"), 
+				*GetOwner()->GetName());
+		return;
+	}
 }
 
 // Get initial parametars for shot
@@ -47,29 +74,26 @@ void AWeaponBase::PrepareForShot()
 {
 	if (!GetWorld()) return;
 
-	FVector PlayerViewportLocation;
-	FRotator PlayerViewportRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-		PlayerViewportLocation, PlayerViewportRotation);
+	FVector TraceStart;
+	FVector TraceEnd;
+	GetShotStartEndPoints(OUT TraceStart, OUT TraceEnd);
 
-	FVector TraceStart = PlayerViewportLocation;
-	FVector TraceDirection = PlayerViewportRotation.Vector();
-	FVector TraceEnd = TraceStart + TraceDirection * WeaponRange;
+	FCollisionQueryParams TraceParams(TEXT(""), false, GetOwner()); // Ignore Owner Collision
 
-	FCollisionQueryParams TraceParams(TEXT(""), false, GetOwner()); // Ignore TraceOwner Collision
 	GetWorld()->LineTraceSingleByChannel(OUT HitResult, TraceStart, TraceEnd,
 			ECollisionChannel::ECC_Visibility, TraceParams);
 
 	SpawnEffects();
-
 }
 
 void AWeaponBase::SpawnEffects()
 {
 	if (MuzzleFlashParticle && ShotSound)
 	{
-		UGameplayStatics::SpawnEmitterAttached(MuzzleFlashParticle, SkeletalMesh, MuzzleSocketName);
-		UGameplayStatics::SpawnSoundAttached(ShotSound, SkeletalMesh, MuzzleSocketName);
+		UGameplayStatics::SpawnEmitterAttached(MuzzleFlashParticle, 
+				SkeletalMesh, MuzzleSocketName);
+		UGameplayStatics::SpawnSoundAttached(ShotSound, SkeletalMesh, 
+				MuzzleSocketName);
 	} else
 	{
 		UE_LOG(LogTemp, Error, TEXT(
