@@ -2,6 +2,7 @@
 
 
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 #include "Players/PlayerGround.h"
 
@@ -23,14 +24,19 @@ void AWeaponRifle::Shoot()
 			ECollisionChannel::ECC_Visibility, TraceParams);
 
     APlayerGround* PlayerGround = Cast<APlayerGround>(HitResult.GetActor());
-    if (!PlayerGround) return;
-    AController* PlayerController = PlayerGround->GetController();
-    if (!PlayerController) return;
-
-    UGameplayStatics::ApplyDamage(PlayerGround, WeaponDamage, PlayerController, 
-            this, nullptr);
+    
+	if (PlayerGround)
+	{
+    	AController* PlayerController = PlayerGround->GetController();
+    
+		if (PlayerController)
+    	UGameplayStatics::ApplyDamage(PlayerGround, WeaponDamage, PlayerController, 
+            	this, nullptr);
+	}
 
 	PrintDebugInfo(HitResult);
+	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, 
+		FColor(0, 255, 0), false, 5.f, 0, 2.f);
 }
 
 void AWeaponRifle::GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint)
@@ -50,6 +56,7 @@ void AWeaponRifle::GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint)
 	}
 	
 	StartPoint = ViewLocation;
-	FVector TraceDirection = ViewRotation.Vector();
+	const auto HalfConeRadius = FMath::DegreesToRadians(BulletSpread); 
+	FVector TraceDirection = FMath::VRandCone(ViewRotation.Vector(), HalfConeRadius);
 	EndPoint = StartPoint + TraceDirection * WeaponRange;
 }
