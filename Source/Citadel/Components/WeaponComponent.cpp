@@ -3,6 +3,7 @@
 
 #include "Weapons/WeaponBase.h"
 #include "Weapons/WeaponRifle.h"
+#include "Weapons/WeaponRocketLauncher.h"
 #include "Players/PlayerGround.h"
 
 #include "Components/WeaponComponent.h"
@@ -44,8 +45,10 @@ void UWeaponComponent::SetupWeapon()
 
 void UWeaponComponent::Shoot()
 {
-	AWeaponRifle* WeaponCasted = Cast<AWeaponRifle>(Weapon);
-	if (WeaponCasted)
+	if (AWeaponRifle* WeaponCasted = Cast<AWeaponRifle>(Weapon))
+	WeaponCasted->Shoot();
+	
+	if (AWeaponRocketLauncher* WeaponCasted = Cast<AWeaponRocketLauncher>(Weapon))
 	WeaponCasted->Shoot();
 }
 
