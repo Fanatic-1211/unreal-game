@@ -21,15 +21,6 @@ public:
 	virtual void Shoot();
 
 protected:
-	FHitResult HitResult;
-
-	virtual void PrepareForShot();
-	virtual void SpawnEffects();
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-private:	
 	UPROPERTY(EditAnywhere)
 	FName MuzzleSocketName = TEXT("Muzzle_Socket");
 	UPROPERTY(EditAnywhere)
@@ -38,13 +29,16 @@ private:
 	USkeletalMeshComponent* SkeletalMesh;
 	UPROPERTY(EditDefaultsOnly, Category="Weapon Parameters")
 	int32 WeaponRange = 2000;
-
 	UPROPERTY(EditAnywhere, Category = "FX")
 	UParticleSystem* MuzzleFlashParticle;
-
 	UPROPERTY(EditAnywhere, Category="FX")
 	USoundBase* ShotSound;
 
-	void GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint);
+	virtual void SpawnEffects();
+	virtual void GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint);
+	virtual void PrintDebugInfo(FHitResult& HitResult) const;
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 };

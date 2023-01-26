@@ -32,57 +32,12 @@ void AWeaponBase::BeginPlay()
 
 void AWeaponBase::GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint)
 {
-	FVector ViewLocation;
-	FRotator ViewRotation;
-
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (OwnerPawn->IsPlayerControlled())
-	{
-		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-			ViewLocation, ViewRotation);
-	}
-	else
-	{
-		ViewLocation = SkeletalMesh->GetSocketLocation(MuzzleSocketName);
-		ViewRotation = SkeletalMesh->GetSocketRotation(MuzzleSocketName);
-	}
-	
-	StartPoint = ViewLocation;
-	FVector TraceDirection = ViewRotation.Vector();
-	EndPoint = StartPoint + TraceDirection * WeaponRange;
 }
+
 
 void AWeaponBase::Shoot()
 {
-	PrepareForShot();
-
-	if (HitResult.bBlockingHit)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Pew! %s hits %s!"), 
-				*GetOwner()->GetName(), *HitResult.Actor->GetName());
-	}
-	else
-	{ 
-		UE_LOG(LogTemp, Display, TEXT("Pew! %s hits nothing!"), 
-				*GetOwner()->GetName());
-		return;
-	}
-}
-
-// Get initial parametars for shot
-void AWeaponBase::PrepareForShot()
-{
 	if (!GetWorld()) return;
-
-	FVector TraceStart;
-	FVector TraceEnd;
-	GetShotStartEndPoints(OUT TraceStart, OUT TraceEnd);
-
-	FCollisionQueryParams TraceParams(TEXT(""), false, GetOwner()); // Ignore Owner Collision
-
-	GetWorld()->LineTraceSingleByChannel(OUT HitResult, TraceStart, TraceEnd,
-			ECollisionChannel::ECC_Visibility, TraceParams);
-
 	SpawnEffects();
 }
 
@@ -101,3 +56,17 @@ void AWeaponBase::SpawnEffects()
 	}
 }
 
+void AWeaponBase::PrintDebugInfo(FHitResult& HitResult) const
+{
+	if (HitResult.bBlockingHit)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Pew! %s hits %s!"), 
+				*GetOwner()->GetName(), *HitResult.Actor->GetName());
+	}
+	else
+	{ 
+		UE_LOG(LogTemp, Display, TEXT("Pew! %s hits nothing!"), 
+				*GetOwner()->GetName());
+		return;
+	}
+}

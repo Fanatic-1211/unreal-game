@@ -17,6 +17,15 @@ class CITADEL_API AWeaponRifle : public AWeaponBase
 public:
 	virtual void Shoot() override;
 
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float BulletSpread = 1.5f;
+
+	FHitResult HitResult;
+
+	virtual void GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint) override;
+
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Weapon Parameters")
 	float WeaponDamage = 10.f;
