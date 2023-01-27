@@ -4,19 +4,31 @@
 #include "Weapons/WeaponRocketLauncher.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 #include "Weapons/WeaponProjectile.h"
 
 void AWeaponRocketLauncher::Shoot()
 {
+    Super::Shoot();
+
     FVector StartPoint;
     FVector EndPoint;
     GetShotStartEndPoints(HitResult, StartPoint, EndPoint);
+    EndPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : EndPoint;
+
+    FVector Direction = (EndPoint - StartPoint).GetSafeNormal();
 
     FTransform SpawnLocation(FRotator::ZeroRotator, StartPoint);
 
-    AActor* Projectile = UGameplayStatics::
-        BeginDeferredActorSpawnFromClass(GetWorld(), ProjectileClass, SpawnLocation);
+    AWeaponProjectile* Projectile = GetWorld()->SpawnActorDeferred<AWeaponProjectile>(
+        ProjectileClass, SpawnLocation);
+    DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor(0, 255, 0), false,
+        5.f, 0, 2.f);
 
-    UGameplayStatics::FinishSpawningActor(Projectile, SpawnLocation);
+    if (Projectile)
+    {
+        Projectile->SetShotDirection(Direction);
+        Projectile->FinishSpawning(SpawnLocation);
+    }
 }

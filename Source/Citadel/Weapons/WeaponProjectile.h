@@ -7,6 +7,7 @@
 #include "WeaponProjectile.generated.h"
 
 class USphereComponent;
+class UProjectileMovementComponent;
 
 UCLASS()
 class CITADEL_API AWeaponProjectile : public AActor
@@ -16,6 +17,8 @@ class CITADEL_API AWeaponProjectile : public AActor
 public:	
 	AWeaponProjectile();
 
+	void SetShotDirection(FVector& Direction) {ShotDirection = Direction;}
+
 protected:
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	USphereComponent* CollisionComponent;
@@ -23,6 +26,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	UStaticMeshComponent* MeshComponent;
 
+	UPROPERTY(EditAnywhere, Category="Weapon")
+	UProjectileMovementComponent* ProjectileMovementComponent;
+
 	virtual void BeginPlay() override;
 
+private:
+	FVector ShotDirection;
 };

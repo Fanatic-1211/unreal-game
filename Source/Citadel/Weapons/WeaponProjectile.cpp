@@ -4,6 +4,7 @@
 #include "Weapons/WeaponProjectile.h"
 
 #include "Components/SphereComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 AWeaponProjectile::AWeaponProjectile()
 {
@@ -14,10 +15,19 @@ AWeaponProjectile::AWeaponProjectile()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("MeshComponent");
 	MeshComponent->SetupAttachment(CollisionComponent);
+
+	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(
+		"ProjectileMovementComponent");
 }
 
 void AWeaponProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (ProjectileMovementComponent)
+	ProjectileMovementComponent->Velocity =
+		ShotDirection * ProjectileMovementComponent->InitialSpeed;
+
+	SetLifeSpan(3.f);
 	
 }

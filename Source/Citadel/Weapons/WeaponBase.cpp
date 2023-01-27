@@ -35,6 +35,7 @@ void AWeaponBase::GetShotStartEndPoints(
 {
 	FVector ViewLocation;
 	FRotator ViewRotation;
+	
 
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn->IsPlayerControlled())
@@ -44,10 +45,10 @@ void AWeaponBase::GetShotStartEndPoints(
 	}
 	else
 	{
-		ViewLocation = SkeletalMesh->GetSocketLocation(MuzzleSocketName);
+		ViewRotation = SkeletalMesh->GetSocketRotation(MuzzleSocketName);
 	}
 	
-	StartPoint = ViewLocation;
+	StartPoint = SkeletalMesh->GetSocketLocation(MuzzleSocketName);
 	FVector TraceDirection = ViewRotation.Vector();
 	EndPoint = StartPoint + TraceDirection * WeaponRange;
 
