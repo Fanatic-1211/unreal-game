@@ -29,6 +29,7 @@ void AWeaponRocketLauncher::Shoot()
     if (Projectile)
     {
         Projectile->SetShotDirection(Direction);
+        Projectile->SetOwner(GetOwner());
         Projectile->FinishSpawning(SpawnLocation);
     }
 }

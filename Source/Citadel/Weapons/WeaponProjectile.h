@@ -29,8 +29,19 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
+	float DamageRadius = 200.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
+	float DamageAmount = 50.f;
+
 	virtual void BeginPlay() override;
 
 private:
 	FVector ShotDirection;
+
+	UFUNCTION()
+	void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, FVector NormalImpulse, 
+		const FHitResult& Hit);
 };
