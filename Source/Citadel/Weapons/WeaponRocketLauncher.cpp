@@ -9,14 +9,14 @@
 
 void AWeaponRocketLauncher::Shoot()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Shoot!"));
-    
-	FVector MuzzleSocketLocation = Super::SkeletalMesh->GetSocketLocation(MuzzleSocketName);
-    FTransform SpawnLocation(FRotator::ZeroRotator, MuzzleSocketLocation);
+    FVector StartPoint;
+    FVector EndPoint;
+    GetShotStartEndPoints(HitResult, StartPoint, EndPoint);
+
+    FTransform SpawnLocation(FRotator::ZeroRotator, StartPoint);
 
     AActor* Projectile = UGameplayStatics::
         BeginDeferredActorSpawnFromClass(GetWorld(), ProjectileClass, SpawnLocation);
 
     UGameplayStatics::FinishSpawningActor(Projectile, SpawnLocation);
-
 }

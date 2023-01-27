@@ -20,6 +20,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
 	TSubclassOf<AWeaponProjectile> ProjectileClass;
 
+private:
+	FHitResult HitResult;
+
 
 
 };

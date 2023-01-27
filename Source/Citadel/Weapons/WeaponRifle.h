@@ -21,9 +21,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float BulletSpread = 1.5f;
 
-	FHitResult HitResult;
+	FHitResult RifleHitResult;
 
-	virtual void GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint) override;
+	virtual void GetShotStartEndPoints(FHitResult& HitResult, 
+		FVector& StartPoint, FVector& EndPoint) override;
 
 
 private:

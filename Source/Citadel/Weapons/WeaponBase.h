@@ -35,7 +35,8 @@ protected:
 	USoundBase* ShotSound;
 
 	virtual void SpawnEffects();
-	virtual void GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint);
+	virtual void GetShotStartEndPoints(FHitResult& HitResult, 
+		FVector& StartPoint, FVector& EndPoint);
 	virtual void PrintDebugInfo(FHitResult& HitResult) const;
 
 	// Called when the game starts or when spawned

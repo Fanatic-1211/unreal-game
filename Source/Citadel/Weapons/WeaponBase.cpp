@@ -30,8 +30,30 @@ void AWeaponBase::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AWeaponBase::GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint)
+void AWeaponBase::GetShotStartEndPoints(
+	FHitResult& HitResult, FVector& StartPoint, FVector& EndPoint)
 {
+	FVector ViewLocation;
+	FRotator ViewRotation;
+
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn->IsPlayerControlled())
+	{
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+			ViewLocation, ViewRotation);
+	}
+	else
+	{
+		ViewLocation = SkeletalMesh->GetSocketLocation(MuzzleSocketName);
+	}
+	
+	StartPoint = ViewLocation;
+	FVector TraceDirection = ViewRotation.Vector();
+	EndPoint = StartPoint + TraceDirection * WeaponRange;
+
+	FCollisionQueryParams TraceParams(TEXT(""), false, GetOwner()); // Ignore Owner Collision
+	GetWorld()->LineTraceSingleByChannel(OUT HitResult, StartPoint, EndPoint,
+			ECollisionChannel::ECC_Visibility, TraceParams);
 }
 
 

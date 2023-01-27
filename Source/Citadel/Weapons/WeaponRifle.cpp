@@ -17,13 +17,10 @@ void AWeaponRifle::Shoot()
 
 	FVector TraceStart;
 	FVector TraceEnd;
-	GetShotStartEndPoints(OUT TraceStart, OUT TraceEnd);
+	GetShotStartEndPoints(OUT RifleHitResult, OUT TraceStart, OUT TraceEnd);
 
-	FCollisionQueryParams TraceParams(TEXT(""), false, GetOwner()); // Ignore Owner Collision
-	GetWorld()->LineTraceSingleByChannel(OUT HitResult, TraceStart, TraceEnd,
-			ECollisionChannel::ECC_Visibility, TraceParams);
 
-    APlayerGround* PlayerGround = Cast<APlayerGround>(HitResult.GetActor());
+    APlayerGround* PlayerGround = Cast<APlayerGround>(RifleHitResult.GetActor());
     
 	if (PlayerGround)
 	{
@@ -34,29 +31,19 @@ void AWeaponRifle::Shoot()
             	this, nullptr);
 	}
 
-	PrintDebugInfo(HitResult);
+	PrintDebugInfo(RifleHitResult);
 	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, 
 		FColor(0, 255, 0), false, 5.f, 0, 2.f);
 }
 
-void AWeaponRifle::GetShotStartEndPoints(FVector& StartPoint, FVector& EndPoint)
+void AWeaponRifle::GetShotStartEndPoints(FHitResult& HitResult, 
+	FVector& StartPoint, FVector& EndPoint) 
 {
-	FVector ViewLocation;
-	FRotator ViewRotation;
+	Super::GetShotStartEndPoints(HitResult, StartPoint, EndPoint);
 
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (OwnerPawn->IsPlayerControlled())
-	{
-		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-			ViewLocation, ViewRotation);
-	}
-	else
-	{
-		ViewLocation = Super::SkeletalMesh->GetSocketLocation(MuzzleSocketName);
-	}
-	
-	StartPoint = ViewLocation;
+	// Add spread at the end of LineTrace:
 	const auto HalfConeRadius = FMath::DegreesToRadians(BulletSpread); 
-	FVector TraceDirection = FMath::VRandCone(ViewRotation.Vector(), HalfConeRadius);
+	FVector TraceDirection = (EndPoint - StartPoint) / WeaponRange;
+	TraceDirection = FMath::VRandCone(TraceDirection, HalfConeRadius);
 	EndPoint = StartPoint + TraceDirection * WeaponRange;
 }
