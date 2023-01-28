@@ -87,11 +87,7 @@ void UWeaponComponent::SwitchWeapon()
 			FAttachmentTransformRules::KeepRelativeTransform, 
 			ArmoryWeaponSocketName);
 
-	if (ActiveWeaponIdx == 1) 
-	ActiveWeaponIdx = 0;
-	else if (ActiveWeaponIdx == 0) 
-	ActiveWeaponIdx = 1;
-
+	ActiveWeaponIdx = (ActiveWeaponIdx + 1) % CharacterWeapons.Num();
 
 	ActiveWeapon = CharacterWeapons[ActiveWeaponIdx];
 
@@ -99,4 +95,18 @@ void UWeaponComponent::SwitchWeapon()
 			Player->GetMesh(), 
 			FAttachmentTransformRules::KeepRelativeTransform, 
 			ActiveWeaponSocketName);
+}
+
+void UWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	ActiveWeapon = nullptr;
+
+	for (auto Weapon : CharacterWeapons)
+	{
+		Weapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		Weapon->Destroy();
+	}
+	CharacterWeapons.Empty();
+
+	Super::EndPlay(EndPlayReason);
 }

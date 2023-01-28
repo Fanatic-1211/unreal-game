@@ -27,6 +27,7 @@ protected:
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	int32 ActiveWeaponIdx = 0;
