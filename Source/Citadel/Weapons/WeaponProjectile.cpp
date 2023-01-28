@@ -33,7 +33,7 @@ void AWeaponProjectile::BeginPlay()
 	check(ProjectileMovementComponent);
 	check(CollisionComponent);
 
-
+	AlignForwardVectorWithOwner();
 
 	ProjectileMovementComponent->Velocity =
 		ShotDirection * ProjectileMovementComponent->InitialSpeed;
@@ -64,4 +64,9 @@ void AWeaponProjectile::OnProjectileHit(
 		FColor::Red, false, 5.f);
 
 	Destroy();
+}
+
+void AWeaponProjectile::AlignForwardVectorWithOwner()
+{
+	this->SetActorRotation(GetOwner()->GetActorForwardVector().Rotation());
 }
