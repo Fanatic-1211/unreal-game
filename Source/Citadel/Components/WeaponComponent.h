@@ -18,18 +18,26 @@ public:
 	// Sets default values for this component's properties
 	UWeaponComponent();
 
-	UPROPERTY()
-	AWeaponBase* Weapon;
-
 	void Shoot();
+	void SwitchWeapon();
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
+	TArray<TSubclassOf<AWeaponBase>> WeaponClasses;
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AWeaponBase> WeaponClass;
+	int32 ActiveWeaponIdx = 0;
+
+	UPROPERTY(EditDefaultsOnly, Category="Weapon")
+	FName ActiveWeaponSocketName = TEXT("WeaponSocket_r");
+	UPROPERTY(EditDefaultsOnly, Category="Weapon")
+	FName ArmoryWeaponSocketName = TEXT("ArmorySocket");
+
+	TArray<AWeaponBase*> CharacterWeapons;
+	AWeaponBase* ActiveWeapon;
 
 	void SetupWeapon();
 

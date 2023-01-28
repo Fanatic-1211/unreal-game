@@ -57,7 +57,7 @@ void AWeaponProjectile::OnProjectileHit(
 	ProjectileMovementComponent->StopMovementImmediately();
 	UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageAmount, 
 		GetActorLocation(), DamageRadius,
-		UDamageType::StaticClass(), {GetOwner()}, this, 
+		UDamageType::StaticClass(), {}, this, 
 		nullptr, false);
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 36, 

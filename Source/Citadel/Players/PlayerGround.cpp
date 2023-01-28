@@ -83,6 +83,8 @@ void APlayerGround::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
             &APlayerGround::ToggleRun);
     PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, WeaponComponent,
             &UWeaponComponent::Shoot);
+    PlayerInputComponent->BindAction(TEXT("SwitchWeapon"), IE_Pressed, WeaponComponent,
+            &UWeaponComponent::SwitchWeapon);
 
 }
 

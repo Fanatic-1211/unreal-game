@@ -31,24 +31,72 @@ void UWeaponComponent::SetupWeapon()
 	APlayerGround* Player = Cast<APlayerGround>(GetOwner());
 	if (!Player) return;
 
-
-	Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
-	if (!Weapon)
+	if (WeaponClasses.Num() == 0)
 	{
-	UE_LOG(LogTemp, Error, TEXT("%s: Default Weapon has not set!"), *Player->GetName());
-	return;
+		UE_LOG(LogTemp, Error,
+			TEXT("%s: Default Weapons has not set!"), *Player->GetName());
+		return;
 	}
-	Weapon->AttachToComponent(Player->GetMesh(), 
-		FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket_r"));
-	Weapon->SetOwner(Player);
+
+	FAttachmentTransformRules AttachmentRules (EAttachmentRule::SnapToTarget, false);
+
+	for (auto WeaponClass : WeaponClasses)
+	{
+		AWeaponBase* Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
+
+		Weapon->AttachToComponent(
+			Player->GetMesh(), 
+			FAttachmentTransformRules::KeepRelativeTransform, 
+			ArmoryWeaponSocketName);
+
+		Weapon->SetOwner(Player);
+		CharacterWeapons.Add(Weapon);
+	}
+
+	ActiveWeapon = CharacterWeapons[ActiveWeaponIdx];
+	if (!ActiveWeapon) 
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("%s: Cant get active weapon!"), *Player->GetName());
+		return;
+	}
+
+	ActiveWeapon->AttachToComponent(
+			Player->GetMesh(), 
+			FAttachmentTransformRules::KeepRelativeTransform, 
+			ActiveWeaponSocketName);
 }
 
 void UWeaponComponent::Shoot()
 {
-	if (AWeaponRifle* WeaponCasted = Cast<AWeaponRifle>(Weapon))
+	if (AWeaponRifle* WeaponCasted = Cast<AWeaponRifle>(ActiveWeapon))
 	WeaponCasted->Shoot();
 	
-	if (AWeaponRocketLauncher* WeaponCasted = Cast<AWeaponRocketLauncher>(Weapon))
+	if (AWeaponRocketLauncher* WeaponCasted = Cast<AWeaponRocketLauncher>(ActiveWeapon))
 	WeaponCasted->Shoot();
 }
 
+void UWeaponComponent::SwitchWeapon()
+{
+	APlayerGround* Player = Cast<APlayerGround>(GetOwner());
+	if (!Player) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Switch"));
+	ActiveWeapon->AttachToComponent(
+			Player->GetMesh(), 
+			FAttachmentTransformRules::KeepRelativeTransform, 
+			ArmoryWeaponSocketName);
+
+	if (ActiveWeaponIdx == 1) 
+	ActiveWeaponIdx = 0;
+	else if (ActiveWeaponIdx == 0) 
+	ActiveWeaponIdx = 1;
+
+
+	ActiveWeapon = CharacterWeapons[ActiveWeaponIdx];
+
+	ActiveWeapon->AttachToComponent(
+			Player->GetMesh(), 
+			FAttachmentTransformRules::KeepRelativeTransform, 
+			ActiveWeaponSocketName);
+}

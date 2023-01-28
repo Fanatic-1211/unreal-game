@@ -34,7 +34,8 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta = (ClampMin = "0.0", ClampMax = "1000.0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", 
+		meta = (ClampMin = "0.0", ClampMax = "1000.0"))
 	float MaxHealth = 100.f;
 
 private:
