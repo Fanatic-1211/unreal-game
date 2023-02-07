@@ -8,6 +8,7 @@
 
 class USphereComponent;
 class UProjectileMovementComponent;
+class UImpactFXComponent;
 
 UCLASS()
 class CITADEL_API AWeaponProjectile : public AActor
@@ -39,6 +40,9 @@ protected:
 
 private:
 	FVector ShotDirection;
+
+	UPROPERTY(EditAnywhere)
+	UImpactFXComponent* ImpactFXComponent;
 
 	UFUNCTION()
 	void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,

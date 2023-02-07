@@ -8,6 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 
+#include "Components/ImpactFXComponent.h"
+
 AWeaponProjectile::AWeaponProjectile()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -21,6 +23,9 @@ AWeaponProjectile::AWeaponProjectile()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("MeshComponent");
 	MeshComponent->SetupAttachment(CollisionComponent);
+
+	ImpactFXComponent = CreateAbstractDefaultSubobject<UImpactFXComponent>(
+		TEXT("ImpactFXComponent"));
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(
 		"ProjectileMovementComponent");
@@ -55,6 +60,9 @@ void AWeaponProjectile::OnProjectileHit(
 	if (!GetWorld()) return;
 
 	ProjectileMovementComponent->StopMovementImmediately();
+
+	ImpactFXComponent->PlayImpactFX(Hit);
+
 	UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageAmount, 
 		GetActorLocation(), DamageRadius,
 		UDamageType::StaticClass(), {}, this, 

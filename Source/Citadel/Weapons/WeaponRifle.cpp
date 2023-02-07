@@ -1,15 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "Weapons/WeaponRifle.h"
+
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 
 #include "Players/PlayerGround.h"
+#include "Components/ImpactFXComponent.h"
 
-#include "Weapons/WeaponRifle.h"
 
 #define OUT
 
+AWeaponRifle::AWeaponRifle()
+{
+	ImpactFXComponent = CreateAbstractDefaultSubobject<UImpactFXComponent>(
+		TEXT("ImpactFXComponent"));
+}
 
 void AWeaponRifle::Shoot() 
 {
@@ -30,6 +37,8 @@ void AWeaponRifle::Shoot()
     	UGameplayStatics::ApplyDamage(PlayerGround, WeaponDamage, PlayerController, 
             	this, nullptr);
 	}
+
+	ImpactFXComponent->PlayImpactFX(RifleHitResult);
 
 	PrintDebugInfo(RifleHitResult);
 	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, 

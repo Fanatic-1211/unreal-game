@@ -6,15 +6,14 @@
 #include "Weapons/WeaponBase.h"
 #include "WeaponRifle.generated.h"
 
-/**
- * 
- */
+class UImpactFXComponent;
 UCLASS()
 class CITADEL_API AWeaponRifle : public AWeaponBase
 {
 	GENERATED_BODY()
 	
 public:
+	AWeaponRifle();
 	virtual void Shoot() override;
 
 protected:
@@ -28,6 +27,9 @@ protected:
 
 
 private:
+	UPROPERTY(EditAnywhere)
+	UImpactFXComponent* ImpactFXComponent;
+
 	UPROPERTY(EditDefaultsOnly, Category="Weapon Parameters")
 	float WeaponDamage = 10.f;
 
