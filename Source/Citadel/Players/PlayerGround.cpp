@@ -135,7 +135,14 @@ void APlayerGround::UpdateHealthRenderText()
 
 void APlayerGround::OnDeath()
 {
-    PlayAnimMontage(DeathAnimMontage);
+    //PlayAnimMontage(DeathAnimMontage);
+
+    if(GetMesh())
+    {
+        GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        GetMesh()->SetSimulatePhysics(true);
+    }
+    
     
     if (PlayerPawn && PlayerController)
     GetCharacterMovement()->DisableMovement();
