@@ -3,6 +3,7 @@
 
 #include "Components/HealthComponent.h"
 
+#include "GameFramework/Pawn.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -43,6 +44,8 @@ void UHealthComponent::TakeAnyDamage(AActor* DamageActor, float Damage,
 {
 	if (IsDead()) return;
 
+	PlayCameraShake();
+
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 
 	OnDamage.Broadcast();
@@ -58,3 +61,15 @@ bool UHealthComponent::IsDead()
 	return CurrentHealth <= 0.0f;
 }
 
+void UHealthComponent::PlayCameraShake()
+{
+	APawn* PlayerPawn = Cast<APawn>(GetOwner());
+	if (!PlayerPawn) return;
+
+	APlayerController* PlayerController = 
+		Cast<APlayerController>(PlayerPawn->GetController());
+	if (!PlayerController) return;
+
+	PlayerController->PlayerCameraManager->StartCameraShake(CameraShaker);
+
+}

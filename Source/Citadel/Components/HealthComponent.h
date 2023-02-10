@@ -9,6 +9,7 @@
 DECLARE_MULTICAST_DELEGATE(FOnDeath); // Delegate for C++ only 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamage); // Delegate for Blueprints and C++ 
 
+class UCameraShakeBase;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CITADEL_API UHealthComponent : public UActorComponent
 {
@@ -38,8 +39,13 @@ protected:
 		meta = (ClampMin = "0.0", ClampMax = "1000.0"))
 	float MaxHealth = 100.f;
 
+	void PlayCameraShake();
+
 private:
 	float CurrentHealth = 0.f;
+
+	UPROPERTY(EditAnywhere, Category="VFX")
+	TSubclassOf<UCameraShakeBase> CameraShaker;
 
 
 	UFUNCTION()
