@@ -5,6 +5,8 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 #include "Players/PlayerGround.h"
 #include "Components/ImpactFXComponent.h"
@@ -38,11 +40,12 @@ void AWeaponRifle::Shoot()
             	this, nullptr);
 	}
 
+	SpawnTraceFX(TraceStart, TraceEnd);
 	ImpactFXComponent->PlayImpactFX(RifleHitResult);
 
 	PrintDebugInfo(RifleHitResult);
-	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, 
-		FColor(0, 255, 0), false, 5.f, 0, 2.f);
+	// DrawDebugLine(GetWorld(), TraceStart, TraceEnd, 
+	// 	FColor(0, 255, 0), false, 5.f, 0, 2.f);
 }
 
 void AWeaponRifle::GetShotStartEndPoints(FHitResult& HitResult, 
@@ -55,4 +58,14 @@ void AWeaponRifle::GetShotStartEndPoints(FHitResult& HitResult,
 	FVector TraceDirection = (EndPoint - StartPoint) / WeaponRange;
 	TraceDirection = FMath::VRandCone(TraceDirection, HalfConeRadius);
 	EndPoint = StartPoint + TraceDirection * WeaponRange;
+}
+
+void AWeaponRifle::SpawnTraceFX(const FVector& StartPoint, const FVector& EndPoint)
+{
+	const auto TraceFXComponent = 
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TraceFX, StartPoint);
+
+	if (TraceFXComponent)
+	TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, EndPoint);
+
 }

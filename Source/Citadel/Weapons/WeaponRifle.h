@@ -7,6 +7,7 @@
 #include "WeaponRifle.generated.h"
 
 class UImpactFXComponent;
+class UNiagaraSystem;
 UCLASS()
 class CITADEL_API AWeaponRifle : public AWeaponBase
 {
@@ -20,6 +21,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float BulletSpread = 1.5f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
+	UNiagaraSystem* TraceFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
+	FString TraceTargetName = "TraceTarget";
+
 	FHitResult RifleHitResult;
 
 	virtual void GetShotStartEndPoints(FHitResult& HitResult, 
@@ -32,5 +39,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Weapon Parameters")
 	float WeaponDamage = 10.f;
+
+	void SpawnTraceFX(const FVector& StartPoint, const FVector& EndPoint);
 
 };
