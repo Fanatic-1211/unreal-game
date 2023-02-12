@@ -33,8 +33,9 @@ void UHealthComponent::BeginPlay()
 }
 
 void UHealthComponent::AddHealth(float Value)
-{
-	CurrentHealth += Value;
+{	
+
+	CurrentHealth = FMath::Clamp(CurrentHealth + Value, 0.f, MaxHealth);
 }
 
 

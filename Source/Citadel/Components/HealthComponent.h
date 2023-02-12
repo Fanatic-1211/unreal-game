@@ -22,6 +22,8 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHealth() { return CurrentHealth; };
 	UFUNCTION(BlueprintPure)
+	float GetMaxHealth() { return MaxHealth; };
+	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() { return GetHealth() / MaxHealth; };
 
 	void AddHealth(float Value);
@@ -33,13 +35,14 @@ public:
 	bool IsDead();
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", 
 		meta = (ClampMin = "0.0", ClampMax = "1000.0"))
 	float MaxHealth = 100.f;
 
 	void PlayCameraShake();
+
+	// Called when the game starts
+	virtual void BeginPlay() override;
 
 private:
 	float CurrentHealth = 0.f;
