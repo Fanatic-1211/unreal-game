@@ -69,7 +69,7 @@ void AWeaponProjectile::OnProjectileHit(
 		nullptr, false);
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 36, 
-		FColor::Red, false, 5.f);
+		FColor::Red, false, 0.5f);
 
 	Destroy();
 }
