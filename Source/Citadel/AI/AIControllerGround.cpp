@@ -13,6 +13,8 @@ AAIControllerGround::AAIControllerGround()
     PerceptionComponentGround = CreateDefaultSubobject<UPerceptionComponent>(
         TEXT("PerceptionComponentGround"));
     SetPerceptionComponent(*PerceptionComponentGround);
+
+    bWantsPlayerState = true; // required for AI respawn system
 }
 
 void AAIControllerGround::Tick(float DeltaTime)
