@@ -32,6 +32,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(
 		class UInputComponent* PlayerInputComponent) override;
+	void SetPlayerColor(FLinearColor Color);
 
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
@@ -47,6 +48,8 @@ public:
 	void UpdateHealthRenderText();
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Materials")
+	FName MaterialColorName = "BodyColor"; // Node name into material asset
 
 	virtual void BeginPlay() override;
 	virtual void OnDeath();

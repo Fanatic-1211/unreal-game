@@ -155,3 +155,13 @@ void APlayerGround::OnDeath()
 
     SetLifeSpan(5.f);
 }
+
+void APlayerGround::SetPlayerColor(FLinearColor Color)
+{
+    auto MaterialInst = GetMesh()->CreateAndSetMaterialInstanceDynamic(0);
+
+    if (!MaterialInst) return;
+
+    MaterialInst->SetVectorParameterValue(MaterialColorName, Color);
+
+}

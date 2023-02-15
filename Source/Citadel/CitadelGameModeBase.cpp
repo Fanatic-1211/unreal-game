@@ -5,6 +5,14 @@
 
 #include "AIController.h"
 
+#include "Components/PlayerStateBase.h"
+#include "Players/PlayerGround.h"
+
+
+ACitadelGameModeBase::ACitadelGameModeBase()
+{
+    PlayerStateClass = APlayerStateBase::StaticClass();
+}
 
 
 void ACitadelGameModeBase::StartPlay()
@@ -13,6 +21,7 @@ void ACitadelGameModeBase::StartPlay()
 
     StartNewRound();
     SpawnBots();
+    CreateTeamsInfo();
     
 }
 
@@ -86,5 +95,60 @@ void ACitadelGameModeBase::ResetOnePlayer(AController* PlayerController)
     if (PlayerController && PlayerController->GetPawn())
     PlayerController->GetPawn()->Reset();
 
-    RestartPlayer(PlayerController); // GamemodeBase function
+    RestartPlayer(PlayerController); // GamemodeBase default function
+    SetPlayerColor(PlayerController);
+}
+
+void ACitadelGameModeBase::CreateTeamsInfo()
+{
+    if (!GetWorld()) return;
+
+    int32 CurrentTeamID = 1;
+
+    for (auto It = GetWorld()->GetControllerIterator(); It; ++It)
+    {
+        AController* Controller = It->Get();
+        if (!Controller) continue;
+        
+        APlayerStateBase* PlayerState = Cast<APlayerStateBase>(
+                Controller->PlayerState);
+        if (!PlayerState) continue;
+
+        PlayerState->SetTeamID(CurrentTeamID);
+        PlayerState->SetTeamColor(DetermineColorByTeamID(CurrentTeamID));
+        SetPlayerColor(Controller);
+
+        CurrentTeamID = CurrentTeamID == 1 ? 2 : 1;
+
+    }
+    
+}
+
+FLinearColor ACitadelGameModeBase::DetermineColorByTeamID(int32 TeamID) const
+{
+    if (TeamID - 1 < GameData.TeamColors.Num())
+    {
+        return GameData.TeamColors[TeamID - 1];
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, 
+            TEXT("There is no that index in GameData.TeamColors array!"));
+
+        return GameData.DefaultTeamColor;
+    }
+}
+
+void ACitadelGameModeBase::SetPlayerColor(AController* Controller)
+{
+    if (!Controller) return;
+
+    APlayerGround* Pawn = Cast<APlayerGround>(Controller->GetPawn());
+    if (!Pawn) return;
+
+    APlayerStateBase* PlayerState = Cast<APlayerStateBase>(Controller->PlayerState);
+    if (!PlayerState) return;
+
+    Pawn->SetPlayerColor(PlayerState->GetTeamColor());
+
 }

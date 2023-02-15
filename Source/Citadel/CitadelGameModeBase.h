@@ -15,6 +15,8 @@ class CITADEL_API ACitadelGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	ACitadelGameModeBase();
+
 	virtual void StartPlay() override;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(
 		AController* InController) override;
@@ -39,6 +41,10 @@ private:
 	void SpawnBots();
 	void ResetPlayers();
 	void ResetOnePlayer(AController* PlayerController);
+
+	FLinearColor DetermineColorByTeamID(int32 TeamID) const;
+	void CreateTeamsInfo();
+	void SetPlayerColor(AController* Controller);
 
 	
 };
