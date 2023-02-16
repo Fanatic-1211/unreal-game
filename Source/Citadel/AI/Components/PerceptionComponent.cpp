@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "Perception/AISense_Sight.h"
 
+#include "Dev/CustomUtils.h"
 #include "Components/HealthComponent.h"
 
 
@@ -27,7 +28,13 @@ AActor* UPerceptionComponent::GetClosestEnemy() const
         UHealthComponent* HealthComponent = 
             PerceiveActor->FindComponentByClass<UHealthComponent>();
         
-        if (HealthComponent && !HealthComponent->IsDead()) 
+        APawn* PerceiveActorPawn = Cast<APawn>(PerceiveActor);
+        AController* PerceiveActorController = PerceiveActorPawn->GetController();
+
+        if (HealthComponent 
+            && !HealthComponent->IsDead() 
+            && CustomUtils::AreEnemies(Controller, PerceiveActorController)
+            ) 
         {
 
             float CurrentDistance = (
