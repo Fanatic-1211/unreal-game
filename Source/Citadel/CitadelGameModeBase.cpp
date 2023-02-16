@@ -36,6 +36,20 @@ UClass* ACitadelGameModeBase::GetDefaultPawnClassForController_Implementation
     return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 
+void ACitadelGameModeBase::ConfirmKill(
+    AController* KillerController, AController* VictimController)
+{
+    if (!KillerController || !VictimController) return;
+
+    APlayerStateBase* KillerState = Cast<APlayerStateBase>(
+        KillerController->PlayerState);
+    APlayerStateBase* VictimState = Cast<APlayerStateBase>(
+        VictimController->PlayerState);
+    
+    KillerState->AddKill();
+    VictimState->AddDeath();
+}
+
 void ACitadelGameModeBase::StartNewRound()
 {
     RoundCountdown = GameData.RoundDuration;
@@ -61,7 +75,8 @@ void ACitadelGameModeBase::UpdateRoundTimer()
         }
         else
         {
-            UE_LOG(LogTemp, Warning, TEXT("Game Over!"));
+            UE_LOG(LogTemp, Warning, TEXT("\nGame Over!\n"));
+            PrintPlayerStatistic();
         }
     }
 }
@@ -151,4 +166,18 @@ void ACitadelGameModeBase::SetPlayerColor(AController* Controller)
 
     Pawn->SetPlayerColor(PlayerState->GetTeamColor());
 
+}
+
+void ACitadelGameModeBase::PrintPlayerStatistic()
+{
+    AController* PlayerController = GetWorld()->GetFirstPlayerController();
+    if (!PlayerController) return;
+
+    APlayerStateBase* PlayerState = 
+        Cast<APlayerStateBase>(PlayerController->PlayerState);
+    if (!PlayerState) return;
+
+    UE_LOG(LogTemp, Warning, 
+        TEXT("Your stats:\n Kills: %i \n Deaths: %i\n"), 
+        PlayerState->GetKillsNum(), PlayerState->GetDeathsNum());
 }

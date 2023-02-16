@@ -18,8 +18,12 @@ public:
 	ACitadelGameModeBase();
 
 	virtual void StartPlay() override;
+
 	virtual UClass* GetDefaultPawnClassForController_Implementation(
 		AController* InController) override;
+
+	virtual void ConfirmKill(
+		AController* KillerController, AController* VictimController);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Game")
@@ -45,6 +49,8 @@ private:
 	FLinearColor DetermineColorByTeamID(int32 TeamID) const;
 	void CreateTeamsInfo();
 	void SetPlayerColor(AController* Controller);
+
+	void PrintPlayerStatistic();
 
 	
 };

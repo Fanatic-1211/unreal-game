@@ -29,14 +29,14 @@ void AWeaponRifle::Shoot()
 	GetShotStartEndPoints(OUT RifleHitResult, OUT TraceStart, OUT TraceEnd);
 
 
-    APlayerGround* PlayerGround = Cast<APlayerGround>(RifleHitResult.GetActor());
+    APlayerGround* PlayerGroundPawn = Cast<APlayerGround>(RifleHitResult.GetActor());
     
-	if (PlayerGround)
+	if (PlayerGroundPawn)
 	{
-    	AController* PlayerController = PlayerGround->GetController();
+    	AController* PlayerController = Cast<APawn>(GetOwner())->Controller;
     
 		if (PlayerController)
-    	UGameplayStatics::ApplyDamage(PlayerGround, WeaponDamage, PlayerController, 
+    	UGameplayStatics::ApplyDamage(PlayerGroundPawn, WeaponDamage, PlayerController, 
             	this, nullptr);
 	}
 

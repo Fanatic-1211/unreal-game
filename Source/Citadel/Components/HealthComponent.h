@@ -56,4 +56,5 @@ private:
 			const class UDamageType* DamageType, class AController* InstigatedBy,
 			AActor* DamageCauser);
 
+	void YellAboutKill(AController* KillerController);
 };

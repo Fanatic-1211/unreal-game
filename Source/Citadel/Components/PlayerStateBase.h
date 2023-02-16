@@ -15,6 +15,12 @@ class CITADEL_API APlayerStateBase : public APlayerState
 	GENERATED_BODY()
 
 public:
+	int32 GetDeathsNum() {return this->DeathsNum;}
+	void AddDeath() {this->DeathsNum++;}
+
+	int32 GetKillsNum() {return this->KillsNum;}
+	void AddKill() {this->KillsNum++;}
+
 	int32 GetTeamID() {return this->TeamID;}
 	void SetTeamID(int32 Value) {this->TeamID = Value;}
 
@@ -22,6 +28,9 @@ public:
 	void SetTeamColor(FLinearColor Color) {this->TeamColor = Color;}
 	
 private:
+	int32 DeathsNum;
+	int32 KillsNum;
 	int32 TeamID;
 	FLinearColor TeamColor;
+
 };

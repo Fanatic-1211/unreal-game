@@ -30,6 +30,15 @@ void AWeaponBase::BeginPlay()
 	Super::BeginPlay();
 }
 
+AController* AWeaponBase::GetOwnerController()
+{
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (!OwnerPawn) return nullptr;
+
+	return OwnerPawn->Controller;
+
+}
+
 void AWeaponBase::GetShotStartEndPoints(
 	FHitResult& HitResult, FVector& StartPoint, FVector& EndPoint)
 {

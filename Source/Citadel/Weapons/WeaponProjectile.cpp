@@ -63,10 +63,13 @@ void AWeaponProjectile::OnProjectileHit(
 
 	ImpactFXComponent->PlayImpactFX(Hit);
 
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	AController* OwnerController = OwnerPawn->Controller;
+
 	UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageAmount, 
 		GetActorLocation(), DamageRadius,
 		UDamageType::StaticClass(), {}, this, 
-		nullptr, false);
+		OwnerController, false);
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 36, 
 		FColor::Red, false, 0.5f);

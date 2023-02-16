@@ -2,6 +2,7 @@
 
 
 #include "Components/HealthComponent.h"
+#include "CitadelGamemodeBase.h"
 
 #include "GameFramework/Pawn.h"
 
@@ -54,6 +55,11 @@ void UHealthComponent::TakeAnyDamage(AActor* DamageActor, float Damage,
 	if (IsDead())
 	{
 		OnDeath.Broadcast(); // оповещаем всех подписаных
+
+		if (InstigatedBy)
+		YellAboutKill(InstigatedBy);
+		else
+		UE_LOG(LogTemp, Error, TEXT("Damage Instigator not specified - kill doesn't count!"));
 	}
 }
 
@@ -72,5 +78,22 @@ void UHealthComponent::PlayCameraShake()
 	if (!PlayerController) return;
 
 	PlayerController->PlayerCameraManager->StartCameraShake(CameraShaker);
+
+}
+
+void UHealthComponent::YellAboutKill(AController* KillerController)
+{
+	if (!GetWorld()) return;
+
+	ACitadelGameModeBase* GameMode = 
+		Cast<ACitadelGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (!GameMode) return;
+	
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (!OwnerPawn) return;
+	AController* OwnerController = OwnerPawn->Controller;
+	if (!OwnerController) return;
+
+	GameMode->ConfirmKill(KillerController, OwnerController);
 
 }
