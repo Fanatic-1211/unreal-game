@@ -4,6 +4,7 @@
 #include "CitadelGameModeBase.h"
 
 #include "AIController.h"
+#include "EngineUtils.h"
 
 #include "Components/PlayerStateBase.h"
 #include "Players/PlayerGround.h"
@@ -62,7 +63,7 @@ void ACitadelGameModeBase::RequestRespawn(AController* Controller)
     if (!Controller) return;
 
     ResetOnePlayer(Controller);
-    UE_LOG(LogTemp, Display, TEXT("CitadelGameModeBase: %s has respawned."), 
+    UE_LOG(LogTemp, Display, TEXT("%s has respawned."), 
         *Controller->GetName());
 }
 
@@ -91,8 +92,7 @@ void ACitadelGameModeBase::UpdateRoundTimer()
         }
         else
         {
-            UE_LOG(LogTemp, Warning, TEXT("\nGame Over!\n"));
-            PrintPlayerStatistic();
+            FinishGame();
         }
     }
 }
@@ -214,4 +214,22 @@ void ACitadelGameModeBase::StartRespawnProcess(AController* Controller)
     } 
     RespawnComponent->Respawn(GameData.TimeToPlayerRespawn);
     
+}
+
+void ACitadelGameModeBase::FinishGame()
+{
+    DisableAllPawns();
+    UE_LOG(LogTemp, Warning, TEXT("\n--- GAME OVER! ---\n"));
+    PrintPlayerStatistic();
+}
+
+void ACitadelGameModeBase::DisableAllPawns()
+{
+    for (auto Pawn : TActorRange<APawn>(GetWorld()))   
+    {
+        if (!Pawn) continue;
+
+        Pawn->TurnOff();
+        Pawn->DisableInput(nullptr);
+    }
 }

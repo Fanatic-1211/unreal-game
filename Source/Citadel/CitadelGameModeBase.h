@@ -57,6 +57,8 @@ private:
 
 	void PrintPlayerStatistic();
 	void StartRespawnProcess(AController* Controller);
+	void FinishGame();
+	void DisableAllPawns();
 
 	
 };
