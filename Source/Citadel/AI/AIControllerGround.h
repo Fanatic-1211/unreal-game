@@ -11,6 +11,7 @@
  */
 class UPerceptionComponent;
 class UBlackboardComponent;
+class URespawnComponent;
 UCLASS()
 class CITADEL_API AAIControllerGround : public AAIController
 {
@@ -30,4 +31,7 @@ private:
 	FName EnemyVarNameFromBlackboard = TEXT("CurrentEnemy");
 	AActor* GetEnemyFromBlackboard();
 	UBlackboardComponent* Blackboard;
+
+	UPROPERTY(EditAnywhere)
+	URespawnComponent* RespawnComponent;
 };

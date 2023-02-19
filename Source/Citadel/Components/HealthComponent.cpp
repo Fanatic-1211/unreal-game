@@ -59,7 +59,9 @@ void UHealthComponent::TakeAnyDamage(AActor* DamageActor, float Damage,
 		if (InstigatedBy)
 		YellAboutKill(InstigatedBy);
 		else
-		UE_LOG(LogTemp, Error, TEXT("Damage Instigator not specified - kill doesn't count!"));
+		UE_LOG(LogTemp, Error, TEXT("\n%s:UHealthCompnent:TakeAnyDamage\n"
+			"Damage Instigator (%s) not specified - kill doesn't count!\n"), 
+			*DamageActor->GetHumanReadableName(), *DamageCauser->GetHumanReadableName());
 	}
 }
 
@@ -91,9 +93,11 @@ void UHealthComponent::YellAboutKill(AController* KillerController)
 	
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (!OwnerPawn) return;
-	AController* OwnerController = OwnerPawn->Controller;
-	if (!OwnerController) return;
 
-	GameMode->ConfirmKill(KillerController, OwnerController);
+	AController* OwnerController = OwnerPawn->Controller;
+	if (OwnerController)
+		GameMode->ConfirmKill(KillerController, OwnerController);
+	else
+		GameMode->ConfirmKill(KillerController, KillerController); // means suicide
 
 }

@@ -21,6 +21,10 @@ struct FGameData
 		meta=(ClampMin="3", ClampMax="300"));
 	int32 RoundDuration = 15; // in seconds
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Game",
+		meta=(ClampMin="0", ClampMax="30"));
+	int32 TimeToPlayerRespawn = 5; // in seconds
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Teams")
 	FLinearColor DefaultTeamColor = FLinearColor::Red;
 

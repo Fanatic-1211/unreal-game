@@ -30,7 +30,6 @@ APlayerGround::APlayerGround(const class FObjectInitializer& ObjectInitializer)
 
     WeaponComponent = CreateAbstractDefaultSubobject<UWeaponComponent>(
             TEXT("WeaponComponent"));
-    
 }
 
 void APlayerGround::BeginPlay()

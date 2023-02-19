@@ -7,6 +7,7 @@
 
 #include "Components/PlayerStateBase.h"
 #include "Players/PlayerGround.h"
+#include "Components/RespawnComponent.h"
 
 
 ACitadelGameModeBase::ACitadelGameModeBase()
@@ -39,6 +40,7 @@ UClass* ACitadelGameModeBase::GetDefaultPawnClassForController_Implementation
 void ACitadelGameModeBase::ConfirmKill(
     AController* KillerController, AController* VictimController)
 {
+
     if (!KillerController || !VictimController) return;
 
     APlayerStateBase* KillerState = Cast<APlayerStateBase>(
@@ -46,8 +48,22 @@ void ACitadelGameModeBase::ConfirmKill(
     APlayerStateBase* VictimState = Cast<APlayerStateBase>(
         VictimController->PlayerState);
     
+    if (KillerController != VictimController) // is not suicide?
     KillerState->AddKill();
+
     VictimState->AddDeath();
+    UE_LOG(LogTemp, Warning, TEXT("%s has killed %s."), 
+        *KillerController->GetName(), *VictimController->GetName());
+    StartRespawnProcess(VictimController);
+}
+
+void ACitadelGameModeBase::RequestRespawn(AController* Controller)
+{   
+    if (!Controller) return;
+
+    ResetOnePlayer(Controller);
+    UE_LOG(LogTemp, Display, TEXT("CitadelGameModeBase: %s has respawned."), 
+        *Controller->GetName());
 }
 
 void ACitadelGameModeBase::StartNewRound()
@@ -180,4 +196,22 @@ void ACitadelGameModeBase::PrintPlayerStatistic()
     UE_LOG(LogTemp, Warning, 
         TEXT("Your stats:\n Kills: %i \n Deaths: %i\n"), 
         PlayerState->GetKillsNum(), PlayerState->GetDeathsNum());
+}
+
+void ACitadelGameModeBase::StartRespawnProcess(AController* Controller)
+{
+
+    UE_LOG(LogTemp, Warning, TEXT("Starting respawn process..."));
+
+    URespawnComponent* RespawnComponent = 
+        Controller->FindComponentByClass<URespawnComponent>();
+    
+    if (!RespawnComponent)
+    {
+        UE_LOG(LogTemp, Error, TEXT("CitadelGameModeBase:StartRespawnProcess \n" 
+            "%s: RespawnComponent doesn't found!"), *Controller->GetName());
+        return;
+    } 
+    RespawnComponent->Respawn(GameData.TimeToPlayerRespawn);
+    
 }

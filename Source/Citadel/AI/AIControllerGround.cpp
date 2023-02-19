@@ -6,6 +6,7 @@
 #include "AI/AIControllerGround.h"
 #include "AI/Components/PerceptionComponent.h"
 #include "AI/AIGround.h"
+#include "Components/RespawnComponent.h"
 
 
 AAIControllerGround::AAIControllerGround()
@@ -13,6 +14,9 @@ AAIControllerGround::AAIControllerGround()
     PerceptionComponentGround = CreateDefaultSubobject<UPerceptionComponent>(
         TEXT("PerceptionComponentGround"));
     SetPerceptionComponent(*PerceptionComponentGround);
+
+    RespawnComponent = CreateAbstractDefaultSubobject<URespawnComponent>(
+                TEXT("RespawnComponent"));
 
     bWantsPlayerState = true; // required for AI respawn system
 }

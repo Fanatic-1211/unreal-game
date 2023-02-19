@@ -28,6 +28,7 @@ public:
 	int32 GetCurrentRoundNum() { return CurrentRound; };
 	int32 GetRoundCountdown() { return RoundCountdown; };
 	int32 GetTotalRoundsNum() { return GameData.RoundsNum; };
+	void RequestRespawn(AController* Controller);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Game")
@@ -55,6 +56,7 @@ private:
 	void SetPlayerColor(AController* Controller);
 
 	void PrintPlayerStatistic();
+	void StartRespawnProcess(AController* Controller);
 
 	
 };

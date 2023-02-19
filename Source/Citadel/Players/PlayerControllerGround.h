@@ -7,18 +7,20 @@
 
 #include "PlayerControllerGround.generated.h"
 
-/**
- * 
- */
+class URespawnComponent;
+
 UCLASS()
 class CITADEL_API APlayerControllerGround : public APlayerControllerBase
 {
 	GENERATED_BODY()
+
+public:
+	APlayerControllerGround();
 	
 protected:
 	virtual void BeginPlay() override;
 
 private:
-
+	URespawnComponent* RespawnComponent;
 };
 
