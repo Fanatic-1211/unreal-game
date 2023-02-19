@@ -25,6 +25,10 @@ public:
 	virtual void ConfirmKill(
 		AController* KillerController, AController* VictimController);
 
+	int32 GetCurrentRoundNum() { return CurrentRound; };
+	int32 GetRoundCountdown() { return RoundCountdown; };
+	int32 GetTotalRoundsNum() { return GameData.RoundsNum; };
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TSubclassOf<AAIController> AIControllerClass;
