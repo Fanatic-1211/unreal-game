@@ -32,3 +32,13 @@ struct FGameData
 	TArray<FLinearColor> TeamColors;
 
 };
+
+enum class CitadelMatchState: uint8
+{
+	WaitingToStart = 0,
+	InProgress,
+	Pause,
+	GameOver
+};
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchStateChangedSignature, CitadelMatchState);

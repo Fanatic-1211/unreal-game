@@ -17,6 +17,8 @@ class CITADEL_API ACitadelGameModeBase : public AGameModeBase
 public:
 	ACitadelGameModeBase();
 
+	FOnMatchStateChangedSignature OnMatchStateChanged;
+
 	virtual void StartPlay() override;
 
 	virtual UClass* GetDefaultPawnClassForController_Implementation(
@@ -41,6 +43,7 @@ protected:
 	FGameData GameData;
 
 private:
+	CitadelMatchState MatchState = CitadelMatchState::WaitingToStart;
 	int32 CurrentRound = 1;
 	int32 RoundCountdown = 0;
 	FTimerHandle RoundTimerHandle;
@@ -59,6 +62,8 @@ private:
 	void StartRespawnProcess(AController* Controller);
 	void FinishGame();
 	void DisableAllPawns();
+
+	void SetMatchState(CitadelMatchState State);
 
 	
 };

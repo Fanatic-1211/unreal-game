@@ -24,7 +24,7 @@ void ACitadelGameModeBase::StartPlay()
     StartNewRound();
     SpawnBots();
     CreateTeamsInfo();
-    
+    SetMatchState(CitadelMatchState::InProgress);
 }
 
 UClass* ACitadelGameModeBase::GetDefaultPawnClassForController_Implementation
@@ -221,6 +221,7 @@ void ACitadelGameModeBase::FinishGame()
     DisableAllPawns();
     UE_LOG(LogTemp, Warning, TEXT("\n--- GAME OVER! ---\n"));
     PrintPlayerStatistic();
+    SetMatchState(CitadelMatchState::GameOver);
 }
 
 void ACitadelGameModeBase::DisableAllPawns()
@@ -232,4 +233,13 @@ void ACitadelGameModeBase::DisableAllPawns()
         Pawn->TurnOff();
         Pawn->DisableInput(nullptr);
     }
+}
+
+void ACitadelGameModeBase::SetMatchState(CitadelMatchState State)
+{
+    if (MatchState == State) return;
+
+    MatchState = State;
+
+    OnMatchStateChanged.Broadcast(MatchState);
 }
