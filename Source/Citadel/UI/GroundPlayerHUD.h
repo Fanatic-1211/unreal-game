@@ -20,8 +20,14 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> WidgetHUDClass;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> WidgetPauseClass;
+
 	virtual void BeginPlay() override;
 
 private:
+    UUserWidget* WidgetPause;
+    UUserWidget* WidgetHUD;
+
     void OnMatchStateChanged(CitadelMatchState MatchState);
 };

@@ -4,14 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+
+#include "Dev/CustomTypes.h"
+
 #include "PlayerControllerBase.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class CITADEL_API APlayerControllerBase : public APlayerController
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
+protected:
+    virtual void BeginPlay() override;
+    virtual void SetupInputComponent() override;
+
+private:
+    void OnPauseGame();
+    void OnMatchStateChanged(CitadelMatchState State);
 };

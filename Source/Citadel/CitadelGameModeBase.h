@@ -32,6 +32,13 @@ public:
 	int32 GetTotalRoundsNum() { return GameData.RoundsNum; };
 	void RequestRespawn(AController* Controller);
 
+    virtual bool SetPause(APlayerController* PC,
+        FCanUnpause CanUnpauseDelegate = FCanUnpause()) override;
+
+    virtual bool ClearPause() override;
+
+    CitadelMatchState GetMatchState() { return MatchState; };
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TSubclassOf<AAIController> AIControllerClass;
@@ -47,8 +54,9 @@ private:
 	int32 CurrentRound = 1;
 	int32 RoundCountdown = 0;
 	FTimerHandle RoundTimerHandle;
+    bool IsPauseSet = false;
 
-	void StartNewRound();
+    void StartNewRound();
 	void UpdateRoundTimer();
 	void SpawnBots();
 	void ResetPlayers();

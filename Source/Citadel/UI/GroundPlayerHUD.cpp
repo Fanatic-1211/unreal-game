@@ -10,9 +10,10 @@ void AGroundPlayerHUD::BeginPlay()
 {
     Super::BeginPlay();
 
-    UUserWidget* WidgetHUD =
-        CreateWidget<UUserWidget>(GetWorld(), WidgetHUDClass);
+    WidgetPause = CreateWidget<UUserWidget>(GetWorld(), WidgetPauseClass);
+    WidgetHUD = CreateWidget<UUserWidget>(GetWorld(), WidgetHUDClass);
 
+    if (WidgetPause) WidgetPause->AddToViewport();
     if (WidgetHUD) WidgetHUD->AddToViewport();
 
     ACitadelGameModeBase* GameMode =
@@ -25,5 +26,15 @@ void AGroundPlayerHUD::BeginPlay()
 void AGroundPlayerHUD::OnMatchStateChanged(CitadelMatchState MatchState)
 {
     UE_LOG(LogTemp, Display,
-        TEXT("GroundPlayerHUD has detected changinging Match State."));
+        TEXT("GroundPlayerHUD has detected changinging MatchState: %s"),
+        *UEnum::GetValueAsString(MatchState));
+
+    if (MatchState == CitadelMatchState::Pause)
+    {
+        if (WidgetPause) WidgetPause->AddToViewport();
+    }
+    if (MatchState == CitadelMatchState::InProgress)
+    {
+        if (WidgetPause) WidgetPause->RemoveFromViewport();
+    }
 }

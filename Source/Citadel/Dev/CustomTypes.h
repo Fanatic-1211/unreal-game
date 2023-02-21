@@ -33,6 +33,7 @@ struct FGameData
 
 };
 
+UENUM(BlueprintType)
 enum class CitadelMatchState: uint8
 {
 	WaitingToStart = 0,

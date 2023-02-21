@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "CitadelGameModeBase.h"
 
 #include "AIController.h"
@@ -10,12 +9,10 @@
 #include "Players/PlayerGround.h"
 #include "Components/RespawnComponent.h"
 
-
 ACitadelGameModeBase::ACitadelGameModeBase()
 {
     PlayerStateClass = APlayerStateBase::StaticClass();
 }
-
 
 void ACitadelGameModeBase::StartPlay()
 {
@@ -27,8 +24,8 @@ void ACitadelGameModeBase::StartPlay()
     SetMatchState(CitadelMatchState::InProgress);
 }
 
-UClass* ACitadelGameModeBase::GetDefaultPawnClassForController_Implementation
-    (AController* InController)
+UClass* ACitadelGameModeBase::GetDefaultPawnClassForController_Implementation(
+    AController* InController)
 {
     if (InController && InController->IsA<AAIController>())
     {
@@ -44,38 +41,56 @@ void ACitadelGameModeBase::ConfirmKill(
 
     if (!KillerController || !VictimController) return;
 
-    APlayerStateBase* KillerState = Cast<APlayerStateBase>(
-        KillerController->PlayerState);
-    APlayerStateBase* VictimState = Cast<APlayerStateBase>(
-        VictimController->PlayerState);
-    
-    if (KillerController != VictimController) // is not suicide?
-    KillerState->AddKill();
+    APlayerStateBase* KillerState =
+        Cast<APlayerStateBase>(KillerController->PlayerState);
+    APlayerStateBase* VictimState =
+        Cast<APlayerStateBase>(VictimController->PlayerState);
+
+    if (KillerController != VictimController)  // is not suicide?
+        KillerState->AddKill();
 
     VictimState->AddDeath();
-    UE_LOG(LogTemp, Warning, TEXT("%s has killed %s."), 
+    UE_LOG(LogTemp, Warning, TEXT("%s has killed %s."),
         *KillerController->GetName(), *VictimController->GetName());
     StartRespawnProcess(VictimController);
 }
 
 void ACitadelGameModeBase::RequestRespawn(AController* Controller)
-{   
+{
     if (!Controller) return;
 
     ResetOnePlayer(Controller);
-    UE_LOG(LogTemp, Display, TEXT("%s has respawned."), 
-        *Controller->GetName());
+
+    UE_LOG(LogTemp, Display, TEXT("%s has respawned."), *Controller->GetName());
+}
+
+bool ACitadelGameModeBase::SetPause(
+    APlayerController* PC, FCanUnpause CanUnpauseDelegate)
+{
+    IsPauseSet = Super::SetPause(PC, CanUnpauseDelegate);
+
+    if (IsPauseSet) SetMatchState(CitadelMatchState::Pause);
+
+    return IsPauseSet;
+}
+
+bool ACitadelGameModeBase::ClearPause()
+{
+    IsPauseSet = !Super::ClearPause();
+
+    if (!IsPauseSet) SetMatchState(CitadelMatchState::InProgress);
+
+    return !IsPauseSet;
 }
 
 void ACitadelGameModeBase::StartNewRound()
 {
     RoundCountdown = GameData.RoundDuration;
 
-    GetWorldTimerManager().SetTimer(
-        RoundTimerHandle, this, &ACitadelGameModeBase::UpdateRoundTimer, 1.f, true);
+    GetWorldTimerManager().SetTimer(RoundTimerHandle, this,
+        &ACitadelGameModeBase::UpdateRoundTimer, 1.f, true);
 
     UE_LOG(LogTemp, Warning, TEXT("New Round Started!"));
-
 }
 
 void ACitadelGameModeBase::UpdateRoundTimer()
@@ -104,11 +119,11 @@ void ACitadelGameModeBase::SpawnBots()
     for (int32 i = 0; i < GameData.PlayersNum; ++i)
     {
         FActorSpawnParameters SpawnInfo;
-        SpawnInfo.SpawnCollisionHandlingOverride = 
+        SpawnInfo.SpawnCollisionHandlingOverride =
             ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-        AAIController* Controller = GetWorld()->
-            SpawnActor<AAIController>(AIControllerClass, SpawnInfo);
-        
+        AAIController* Controller =
+            GetWorld()->SpawnActor<AAIController>(AIControllerClass, SpawnInfo);
+
         RestartPlayer(Controller);
     }
 }
@@ -124,9 +139,9 @@ void ACitadelGameModeBase::ResetPlayers()
 void ACitadelGameModeBase::ResetOnePlayer(AController* PlayerController)
 {
     if (PlayerController && PlayerController->GetPawn())
-    PlayerController->GetPawn()->Reset();
+        PlayerController->GetPawn()->Reset();
 
-    RestartPlayer(PlayerController); // GamemodeBase default function
+    RestartPlayer(PlayerController);  // GamemodeBase default function
     SetPlayerColor(PlayerController);
 }
 
@@ -140,9 +155,9 @@ void ACitadelGameModeBase::CreateTeamsInfo()
     {
         AController* Controller = It->Get();
         if (!Controller) continue;
-        
-        APlayerStateBase* PlayerState = Cast<APlayerStateBase>(
-                Controller->PlayerState);
+
+        APlayerStateBase* PlayerState =
+            Cast<APlayerStateBase>(Controller->PlayerState);
         if (!PlayerState) continue;
 
         PlayerState->SetTeamID(CurrentTeamID);
@@ -150,9 +165,7 @@ void ACitadelGameModeBase::CreateTeamsInfo()
         SetPlayerColor(Controller);
 
         CurrentTeamID = CurrentTeamID == 1 ? 2 : 1;
-
     }
-    
 }
 
 FLinearColor ACitadelGameModeBase::DetermineColorByTeamID(int32 TeamID) const
@@ -163,7 +176,7 @@ FLinearColor ACitadelGameModeBase::DetermineColorByTeamID(int32 TeamID) const
     }
     else
     {
-        UE_LOG(LogTemp, Error, 
+        UE_LOG(LogTemp, Error,
             TEXT("There is no that index in GameData.TeamColors array!"));
 
         return GameData.DefaultTeamColor;
@@ -177,11 +190,11 @@ void ACitadelGameModeBase::SetPlayerColor(AController* Controller)
     APlayerGround* Pawn = Cast<APlayerGround>(Controller->GetPawn());
     if (!Pawn) return;
 
-    APlayerStateBase* PlayerState = Cast<APlayerStateBase>(Controller->PlayerState);
+    APlayerStateBase* PlayerState =
+        Cast<APlayerStateBase>(Controller->PlayerState);
     if (!PlayerState) return;
 
     Pawn->SetPlayerColor(PlayerState->GetTeamColor());
-
 }
 
 void ACitadelGameModeBase::PrintPlayerStatistic()
@@ -189,12 +202,11 @@ void ACitadelGameModeBase::PrintPlayerStatistic()
     AController* PlayerController = GetWorld()->GetFirstPlayerController();
     if (!PlayerController) return;
 
-    APlayerStateBase* PlayerState = 
+    APlayerStateBase* PlayerState =
         Cast<APlayerStateBase>(PlayerController->PlayerState);
     if (!PlayerState) return;
 
-    UE_LOG(LogTemp, Warning, 
-        TEXT("Your stats:\n Kills: %i \n Deaths: %i\n"), 
+    UE_LOG(LogTemp, Warning, TEXT("Your stats:\n Kills: %i \n Deaths: %i\n"),
         PlayerState->GetKillsNum(), PlayerState->GetDeathsNum());
 }
 
@@ -203,17 +215,18 @@ void ACitadelGameModeBase::StartRespawnProcess(AController* Controller)
 
     UE_LOG(LogTemp, Warning, TEXT("Starting respawn process..."));
 
-    URespawnComponent* RespawnComponent = 
+    URespawnComponent* RespawnComponent =
         Controller->FindComponentByClass<URespawnComponent>();
-    
+
     if (!RespawnComponent)
     {
-        UE_LOG(LogTemp, Error, TEXT("CitadelGameModeBase:StartRespawnProcess \n" 
-            "%s: RespawnComponent doesn't found!"), *Controller->GetName());
+        UE_LOG(LogTemp, Error,
+            TEXT("CitadelGameModeBase:StartRespawnProcess \n"
+                 "%s: RespawnComponent doesn't found!"),
+            *Controller->GetName());
         return;
-    } 
+    }
     RespawnComponent->Respawn(GameData.TimeToPlayerRespawn);
-    
 }
 
 void ACitadelGameModeBase::FinishGame()
@@ -226,7 +239,7 @@ void ACitadelGameModeBase::FinishGame()
 
 void ACitadelGameModeBase::DisableAllPawns()
 {
-    for (auto Pawn : TActorRange<APawn>(GetWorld()))   
+    for (auto Pawn : TActorRange<APawn>(GetWorld()))
     {
         if (!Pawn) continue;
 
