@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+
+#include "Dev/CustomTypes.h"
+
 #include "GroundPlayerHUD.generated.h"
 
 class UUserWidget;
@@ -18,4 +21,7 @@ protected:
 	TSubclassOf<UUserWidget> WidgetHUDClass;
 
 	virtual void BeginPlay() override;
+
+private:
+    void OnMatchStateChanged(CitadelMatchState MatchState);
 };
