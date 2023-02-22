@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Components/VerticalBox.h"
+#include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Components/PlayerStateBase.h"
 #include "CitadelGameModeBase.h"
@@ -8,8 +10,9 @@
 
 #include "UI/GameOverWidget.h"
 
-bool UGameOverWidget::Initialize()
+void UGameOverWidget::NativeOnInitialized()
 {
+    Super::Initialize();
     ACitadelGameModeBase* GameMode =
         Cast<ACitadelGameModeBase>(GetWorld()->GetAuthGameMode());
 
@@ -19,7 +22,8 @@ bool UGameOverWidget::Initialize()
             this, &UGameOverWidget::OnMatchStateChanged);
     }
 
-    return Super::Initialize();
+    if (ResetButton)
+        ResetButton->OnClicked.AddDynamic(this, &UGameOverWidget::OnResetLevel);
 }
 
 void UGameOverWidget::OnMatchStateChanged(CitadelMatchState State)
@@ -64,4 +68,9 @@ void UGameOverWidget::UpdatePlayerStatistic()
 
         PlayerStatBox->AddChild(StatisticWidget);
     }
+}
+
+void UGameOverWidget::OnResetLevel() {
+    FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this);
+    UGameplayStatics::OpenLevel(this, FName(CurrentLevelName));
 }

@@ -10,6 +10,7 @@
 #include "GameOverWidget.generated.h"
 
 class UVerticalBox;
+class UButton;
 
 UCLASS()
 class CITADEL_API UGameOverWidget : public UUserWidget
@@ -17,7 +18,6 @@ class CITADEL_API UGameOverWidget : public UUserWidget
     GENERATED_BODY()
 
 public:
-    virtual bool Initialize() override; // BeginPlay analog for Widgets
 
 protected:
     UPROPERTY(meta = (BindWidget))
@@ -26,7 +26,15 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UUserWidget> PlayerStatisticWidgetClass;
 
-protected:
+    UPROPERTY(meta = (BindWidget))
+    UButton* ResetButton;
+
+    virtual void NativeOnInitialized() override; // BeginPlay analog for Widgets
+
+private:
     void OnMatchStateChanged(CitadelMatchState State);
     void UpdatePlayerStatistic();
+
+    UFUNCTION()
+    void OnResetLevel();
 };
