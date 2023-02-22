@@ -160,6 +160,8 @@ void ACitadelGameModeBase::CreateTeamsInfo()
             Cast<APlayerStateBase>(Controller->PlayerState);
         if (!PlayerState) continue;
 
+        PlayerState->SetPlayerName(
+            Controller->IsPlayerController() ? "Player" : "Bot");
         PlayerState->SetTeamID(CurrentTeamID);
         PlayerState->SetTeamColor(DetermineColorByTeamID(CurrentTeamID));
         SetPlayerColor(Controller);
