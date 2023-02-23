@@ -24,6 +24,9 @@ void UGameOverWidget::NativeOnInitialized()
 
     if (ResetButton)
         ResetButton->OnClicked.AddDynamic(this, &UGameOverWidget::OnResetLevel);
+
+    if (MainMenuButton)
+        MainMenuButton->OnClicked.AddDynamic(this, &UGameOverWidget::OnClickMainMenu);
 }
 
 void UGameOverWidget::OnMatchStateChanged(CitadelMatchState State)
@@ -73,4 +76,10 @@ void UGameOverWidget::UpdatePlayerStatistic()
 void UGameOverWidget::OnResetLevel() {
     FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this);
     UGameplayStatics::OpenLevel(this, FName(CurrentLevelName));
+}
+
+void UGameOverWidget::OnClickMainMenu()
+{
+    FName MainMenuName = "MainMenu";
+    UGameplayStatics::OpenLevel(this, MainMenuName);
 }

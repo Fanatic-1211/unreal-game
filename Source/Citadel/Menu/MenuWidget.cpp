@@ -2,6 +2,7 @@
 
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 #include "CitadelGameInstance.h"
 
@@ -13,6 +14,9 @@ void UMenuWidget::NativeOnInitialized()
 
     if (StartGameButton)
         StartGameButton->OnClicked.AddDynamic(this, &UMenuWidget::OnStartGame);
+
+    if (ExitGameButton)
+        ExitGameButton->OnClicked.AddDynamic(this, &UMenuWidget::OnQuitGame);
 }
 
 void UMenuWidget::OnStartGame()
@@ -30,4 +34,10 @@ void UMenuWidget::OnStartGame()
     }
 
     UGameplayStatics::OpenLevel(this, GameInstance->GetStartLevelName());
+}
+
+void UMenuWidget::OnQuitGame()
+{
+    UKismetSystemLibrary::QuitGame(
+        this, GetOwningPlayer(), EQuitPreference::Quit, true);
 }

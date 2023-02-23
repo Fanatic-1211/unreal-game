@@ -29,6 +29,9 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UButton* ResetButton;
 
+    UPROPERTY(meta = (BindWidget))
+    UButton* MainMenuButton;
+
     virtual void NativeOnInitialized() override; // BeginPlay analog for Widgets
 
 private:
@@ -37,4 +40,7 @@ private:
 
     UFUNCTION()
     void OnResetLevel();
+
+    UFUNCTION()
+    void OnClickMainMenu();
 };
