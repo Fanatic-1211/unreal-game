@@ -1,12 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Menu/MenuWidget.h"
+
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 #include "CitadelGameInstance.h"
 
-#include "Menu/MenuWidget.h"
 
 void UMenuWidget::NativeOnInitialized()
 {

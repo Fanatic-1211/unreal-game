@@ -1,5 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "UI/GameOverWidget.h"
+
 #include "Components/VerticalBox.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
@@ -7,8 +9,6 @@
 #include "Components/PlayerStateBase.h"
 #include "CitadelGameModeBase.h"
 #include "UI/StatisticWidget.h"
-
-#include "UI/GameOverWidget.h"
 
 void UGameOverWidget::NativeOnInitialized()
 {
@@ -26,7 +26,8 @@ void UGameOverWidget::NativeOnInitialized()
         ResetButton->OnClicked.AddDynamic(this, &UGameOverWidget::OnResetLevel);
 
     if (MainMenuButton)
-        MainMenuButton->OnClicked.AddDynamic(this, &UGameOverWidget::OnClickMainMenu);
+        MainMenuButton->OnClicked.AddDynamic(
+            this, &UGameOverWidget::OnClickMainMenu);
 }
 
 void UGameOverWidget::OnMatchStateChanged(CitadelMatchState State)
@@ -73,7 +74,8 @@ void UGameOverWidget::UpdatePlayerStatistic()
     }
 }
 
-void UGameOverWidget::OnResetLevel() {
+void UGameOverWidget::OnResetLevel()
+{
     FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this);
     UGameplayStatics::OpenLevel(this, FName(CurrentLevelName));
 }

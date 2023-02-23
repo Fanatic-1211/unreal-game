@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "AI/AIControllerGround.h"
+
 #include "BehaviorTree/BlackboardComponent.h"
 
-#include "AI/AIControllerGround.h"
 #include "AI/Components/PerceptionComponent.h"
 #include "AI/AIGround.h"
 #include "Components/RespawnComponent.h"

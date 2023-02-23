@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Menu/MenuGameModeBase.h"
+
 #include "Menu/MenuHUD.h"
 #include "Menu/MenuPlayerController.h"
-
-#include "Menu/MenuGameModeBase.h"
 
 AMenuGameModeBase::AMenuGameModeBase()
 {

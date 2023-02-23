@@ -1,10 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "AI/AIGround.h"
+
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 #include "BrainComponent.h"
 
-#include "AI/AIGround.h"
 
 
 void AAIGround::BeginPlay()

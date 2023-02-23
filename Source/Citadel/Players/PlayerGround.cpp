@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "Citadel/Players/PlayerGround.h"
+
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -13,7 +15,6 @@
 #include "Components/CustomCharacterMovementComponent.h"
 #include "Weapons/WeaponRifle.h"
 
-#include "Citadel/Players/PlayerGround.h"
 
 APlayerGround::APlayerGround(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomCharacterMovementComponent>(

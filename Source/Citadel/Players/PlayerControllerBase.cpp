@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CitadelGameModeBase.h"
-
 #include "Players/PlayerControllerBase.h"
+
+#include "CitadelGameModeBase.h"
 
 void APlayerControllerBase::SetupInputComponent()
 {
@@ -40,7 +40,7 @@ void APlayerControllerBase::OnMatchStateChanged(CitadelMatchState State)
 void APlayerControllerBase::BeginPlay()
 {
     Super::BeginPlay();
-    
+
     SetInputMode(FInputModeGameOnly());
 
     check(GetWorld());

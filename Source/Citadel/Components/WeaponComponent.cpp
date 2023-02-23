@@ -1,11 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Components/WeaponComponent.h"
+
 #include "Weapons/WeaponBase.h"
 #include "Weapons/WeaponRifle.h"
 #include "Weapons/WeaponRocketLauncher.h"
 #include "Players/PlayerGround.h"
 
-#include "Components/WeaponComponent.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()

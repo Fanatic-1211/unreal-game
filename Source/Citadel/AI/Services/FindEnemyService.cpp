@@ -1,11 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "AI/Services/FindEnemyService.h"
+
 #include "BehaviorTree/BlackboardComponent.h"
 
 #include "AI/AIControllerGround.h"
 #include "AI/Components/PerceptionComponent.h"
 
-#include "AI/Services/FindEnemyService.h"
 
 UFindEnemyService::UFindEnemyService()
 {
