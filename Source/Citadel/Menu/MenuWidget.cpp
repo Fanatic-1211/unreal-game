@@ -3,20 +3,31 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "CitadelGameInstance.h"
+
 #include "Menu/MenuWidget.h"
-
-
 
 void UMenuWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
 
-    if(StartGameButton)
+    if (StartGameButton)
         StartGameButton->OnClicked.AddDynamic(this, &UMenuWidget::OnStartGame);
 }
 
 void UMenuWidget::OnStartGame()
 {
-    const FName StartupLevel = FName("TestLevel");
-    UGameplayStatics::OpenLevel(this, StartupLevel);
+    if (!GetWorld()) return;
+
+    UCitadelGameInstance* GameInstance =
+        GetWorld()->GetGameInstance<UCitadelGameInstance>();
+    if (!GameInstance) return;
+
+    if (GameInstance->GetStartLevelName().IsNone())
+    {
+        UE_LOG(LogTemp, Error, TEXT("Startup level name not set!"));
+        return;
+    }
+
+    UGameplayStatics::OpenLevel(this, GameInstance->GetStartLevelName());
 }

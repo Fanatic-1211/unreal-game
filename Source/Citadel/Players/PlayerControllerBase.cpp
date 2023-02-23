@@ -40,6 +40,8 @@ void APlayerControllerBase::OnMatchStateChanged(CitadelMatchState State)
 void APlayerControllerBase::BeginPlay()
 {
     Super::BeginPlay();
+    
+    SetInputMode(FInputModeGameOnly());
 
     check(GetWorld());
 
