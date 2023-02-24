@@ -38,20 +38,19 @@ UClass* ACitadelGameModeBase::GetDefaultPawnClassForController_Implementation(
 void ACitadelGameModeBase::ConfirmKill(
     AController* KillerController, AController* VictimController)
 {
-
-    if (!KillerController || !VictimController) return;
-
-    APlayerStateBase* KillerState =
-        Cast<APlayerStateBase>(KillerController->PlayerState);
     APlayerStateBase* VictimState =
         Cast<APlayerStateBase>(VictimController->PlayerState);
 
-    if (KillerController != VictimController)  // is not suicide?
-        KillerState->AddKill();
+    if (KillerController)  // should we count kill or not
+    {
+        APlayerStateBase* KillerState =
+            Cast<APlayerStateBase>(KillerController->PlayerState);
+
+        if (KillerController != VictimController)  // is not suicide?
+            KillerState->AddKill();
+    }
 
     VictimState->AddDeath();
-    UE_LOG(LogTemp, Warning, TEXT("%s has killed %s."),
-        *KillerController->GetName(), *VictimController->GetName());
     StartRespawnProcess(VictimController);
 }
 

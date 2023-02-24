@@ -1,103 +1,80 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Components/HealthComponent.h"
-#include "CitadelGamemodeBase.h"
 
 #include "GameFramework/Pawn.h"
+
+#include "CitadelGamemodeBase.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
-	// HealthText = CreateAbstractDefaultSubobject<UTextRenderComponent>(
-	// 		TEXT("RenderText"));
-
+    PrimaryComponentTick.bCanEverTick = false;
 }
 
-
-// Called when the game starts
 void UHealthComponent::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
-	CurrentHealth = MaxHealth;
-	AActor* ComponentOwner = GetOwner();
-	if (ComponentOwner)
-	{
-		ComponentOwner->OnTakeAnyDamage.AddDynamic(
-				this, &UHealthComponent::TakeAnyDamage);
-	}
+    CurrentHealth = MaxHealth;
 
+    AActor* ComponentOwner = GetOwner();
+    if (ComponentOwner)
+        ComponentOwner->OnTakeAnyDamage.AddDynamic(
+            this, &UHealthComponent::TakeAnyDamage);
 }
 
 void UHealthComponent::AddHealth(float Value)
-{	
-
-	CurrentHealth = FMath::Clamp(CurrentHealth + Value, 0.f, MaxHealth);
+{
+    CurrentHealth = FMath::Clamp(CurrentHealth + Value, 0.f, MaxHealth);
 }
 
-
-void UHealthComponent::TakeAnyDamage(AActor* DamageActor, float Damage, 
-			const class UDamageType* DamageType, class AController* InstigatedBy,
-			AActor* DamageCauser)
+void UHealthComponent::TakeAnyDamage(AActor* DamageActor, float Damage,
+    const class UDamageType* DamageType, class AController* InstigatedBy,
+    AActor* DamageCauser)
 {
-	if (IsDead()) return;
+    if (IsDead()) return;
 
-	PlayCameraShake();
+    PlayCameraShake();
 
-	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
+    CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
+    OnDamage.Broadcast();
 
-	OnDamage.Broadcast();
+    if (IsDead())
+    {
+        YellAboutKill(InstigatedBy);
+        OnDeath.Broadcast();
+    }
+}
 
-	if (IsDead())
-	{
-		OnDeath.Broadcast(); // оповещаем всех подписаных
+// Notifies GameMode about kill for start victim respawn process and add a score
+// point to killer.
+void UHealthComponent::YellAboutKill(AController* KillerController)
+{
+    if (!GetWorld()) return;
 
-		if (InstigatedBy)
-		YellAboutKill(InstigatedBy);
-		else
-		UE_LOG(LogTemp, Error, TEXT("\n%s:UHealthCompnent:TakeAnyDamage\n"
-			"Damage Instigator (%s) not specified - kill doesn't count!\n"), 
-			*DamageActor->GetHumanReadableName(), *DamageCauser->GetHumanReadableName());
-	}
+    ACitadelGameModeBase* GameMode =
+        Cast<ACitadelGameModeBase>(GetWorld()->GetAuthGameMode());
+    if (!GameMode) return;
+
+    AController* VictimController = Cast<APawn>(GetOwner())->Controller;
+
+    GameMode->ConfirmKill(KillerController, VictimController);
 }
 
 bool UHealthComponent::IsDead()
 {
-	return CurrentHealth <= 0.0f;
+    return CurrentHealth <= 0.0f;
 }
 
 void UHealthComponent::PlayCameraShake()
 {
-	APawn* PlayerPawn = Cast<APawn>(GetOwner());
-	if (!PlayerPawn) return;
+    APawn* PlayerPawn = Cast<APawn>(GetOwner());
+    if (!PlayerPawn) return;
 
-	APlayerController* PlayerController = 
-		Cast<APlayerController>(PlayerPawn->GetController());
-	if (!PlayerController) return;
+    APlayerController* PlayerController =
+        Cast<APlayerController>(PlayerPawn->GetController());
+    if (!PlayerController) return;
 
-	PlayerController->PlayerCameraManager->StartCameraShake(CameraShaker);
-
-}
-
-void UHealthComponent::YellAboutKill(AController* KillerController)
-{
-	if (!GetWorld()) return;
-
-	ACitadelGameModeBase* GameMode = 
-		Cast<ACitadelGameModeBase>(GetWorld()->GetAuthGameMode());
-	if (!GameMode) return;
-	
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (!OwnerPawn) return;
-
-	AController* OwnerController = OwnerPawn->Controller;
-	if (OwnerController)
-		GameMode->ConfirmKill(KillerController, OwnerController);
-	else
-		GameMode->ConfirmKill(KillerController, KillerController); // means suicide
-
+    PlayerController->PlayerCameraManager->StartCameraShake(CameraShaker);
 }
