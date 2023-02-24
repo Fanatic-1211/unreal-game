@@ -11,35 +11,34 @@ class UNiagaraSystem;
 UCLASS()
 class CITADEL_API AWeaponRifle : public AWeaponBase
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
-	AWeaponRifle();
-	virtual void Shoot() override;
+    AWeaponRifle();
+    virtual void Shoot() override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float BulletSpread = 1.5f;
+    UPROPERTY(
+        EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Parameters")
+    float BulletSpread = 1.5f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
-	UNiagaraSystem* TraceFX;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+    UNiagaraSystem* TraceFX;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
-	FString TraceTargetName = "TraceTarget";
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+    FString TraceTargetName = "TraceTarget";
 
-	FHitResult RifleHitResult;
+    FHitResult RifleHitResult;
 
-	virtual void GetShotStartEndPoints(FHitResult& HitResult, 
-		FVector& StartPoint, FVector& EndPoint) override;
-
+    virtual void GetShotStartEndPoints(
+        FHitResult& HitResult, FVector& StartPoint, FVector& EndPoint) override;
 
 private:
-	UPROPERTY(EditAnywhere)
-	UImpactFXComponent* ImpactFXComponent;
+    UPROPERTY(EditAnywhere)
+    UImpactFXComponent* ImpactFXComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category="Weapon Parameters")
-	float WeaponDamage = 10.f;
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon Parameters")
+    float WeaponDamage = 10.f;
 
-	void SpawnTraceFX(const FVector& StartPoint, const FVector& EndPoint);
-
+    void SpawnTraceFX(const FVector& EndPoint);
 };

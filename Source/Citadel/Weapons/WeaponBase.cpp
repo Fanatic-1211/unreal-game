@@ -52,13 +52,14 @@ void AWeaponBase::GetShotStartEndPoints(
 	{
 		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
 			ViewLocation, ViewRotation);
+		StartPoint = ViewLocation;
 	}
 	else
 	{
 		ViewRotation = SkeletalMesh->GetSocketRotation(MuzzleSocketName);
+		StartPoint = SkeletalMesh->GetSocketLocation(MuzzleSocketName);
 	}
 	
-	StartPoint = SkeletalMesh->GetSocketLocation(MuzzleSocketName);
 	FVector TraceDirection = ViewRotation.Vector();
 	EndPoint = StartPoint + TraceDirection * WeaponRange;
 
