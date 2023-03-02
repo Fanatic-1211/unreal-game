@@ -71,8 +71,8 @@ void AWeaponProjectile::OnProjectileHit(
 		UDamageType::StaticClass(), {}, this, 
 		OwnerController, false);
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 36, 
-		FColor::Red, false, 0.5f);
+	// DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 36, 
+	// 	FColor::Red, false, 0.5f);
 
 	Destroy();
 }

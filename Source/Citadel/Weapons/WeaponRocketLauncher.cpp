@@ -23,8 +23,8 @@ void AWeaponRocketLauncher::Shoot()
 
     AWeaponProjectile* Projectile = GetWorld()->SpawnActorDeferred<AWeaponProjectile>(
         ProjectileClass, SpawnLocation);
-    DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor(0, 255, 0), false,
-        5.f, 0, 2.f);
+    // DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor(0, 255, 0), false,
+    //     5.f, 0, 2.f);
 
     if (Projectile)
     {
