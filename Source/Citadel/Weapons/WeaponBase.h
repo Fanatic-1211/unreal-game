@@ -19,6 +19,7 @@ public:
 	AWeaponBase();
 
 	virtual void Shoot();
+    virtual bool ZoomFOV() { return false; };
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -39,7 +40,7 @@ protected:
 		FVector& StartPoint, FVector& EndPoint);
 	virtual void PrintDebugInfo(FHitResult& HitResult) const;
 
-	// Called when the game starts or when spawned
+    // Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	AController* GetOwnerController();

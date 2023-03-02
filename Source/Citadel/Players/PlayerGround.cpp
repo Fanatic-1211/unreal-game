@@ -85,6 +85,10 @@ void APlayerGround::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
             &UWeaponComponent::Shoot);
     PlayerInputComponent->BindAction(TEXT("SwitchWeapon"), IE_Pressed, WeaponComponent,
             &UWeaponComponent::SwitchWeapon);
+    PlayerInputComponent->BindAction(TEXT("ToggleZoom"), IE_Pressed, WeaponComponent,
+            &UWeaponComponent::ToggleZoom);
+    PlayerInputComponent->BindAction(TEXT("ToggleZoom"), IE_Released, WeaponComponent,
+            &UWeaponComponent::ToggleZoom);
 
 }
 
@@ -122,6 +126,11 @@ void APlayerGround::ToggleRun()
     IsCrouching = false;
 
     (IsRunning == true) ? IsRunning = false : IsRunning = true; 
+}
+
+void APlayerGround::ToggleZoom()
+{
+
 }
 
 

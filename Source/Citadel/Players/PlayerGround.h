@@ -72,6 +72,5 @@ private:
 	void SetupHealthComponent();
 	void ToggleCrouch();
 	void ToggleRun();
-
-
+    void ToggleZoom();
 };

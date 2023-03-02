@@ -94,6 +94,11 @@ void UWeaponComponent::SwitchWeapon()
         ActiveWeaponSocketName);
 }
 
+void UWeaponComponent::ToggleZoom()
+{
+    ActiveWeapon->ZoomFOV();
+}
+
 void UWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     ActiveWeapon = nullptr;

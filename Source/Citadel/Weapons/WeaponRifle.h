@@ -16,6 +16,7 @@ class CITADEL_API AWeaponRifle : public AWeaponBase
 public:
     AWeaponRifle();
     virtual void Shoot() override;
+    virtual bool ZoomFOV() override;
 
 protected:
     UPROPERTY(
@@ -32,6 +33,7 @@ protected:
 
     virtual void GetShotStartEndPoints(
         FHitResult& HitResult, FVector& StartPoint, FVector& EndPoint) override;
+
 
 private:
     UPROPERTY(EditAnywhere)

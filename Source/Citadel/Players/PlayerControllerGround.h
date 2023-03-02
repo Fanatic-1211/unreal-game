@@ -16,11 +16,15 @@ class CITADEL_API APlayerControllerGround : public APlayerControllerBase
 
 public:
 	APlayerControllerGround();
-	
+
+    bool GetFOVZoomed() { return bFOVZoomed; };
+    void SetFOVZoomed(bool Value) { bFOVZoomed = Value; };
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	URespawnComponent* RespawnComponent;
+    bool bFOVZoomed = false;
 };
 
