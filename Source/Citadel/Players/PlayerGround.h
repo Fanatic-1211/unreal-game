@@ -57,8 +57,8 @@ protected:
 private:
 	AActor* PlayerPawn;
 	APlayerController* PlayerController;
-	bool IsCrouching;
-	bool IsRunning;
+	bool IsCrouching = false;
+	bool IsRunning = true;
 
 	UPROPERTY(EditAnywhere)
 	UTextRenderComponent* HealthTextRender;
