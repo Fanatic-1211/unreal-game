@@ -15,6 +15,8 @@ void AGroundPlayerHUD::BeginPlay()
     WidgetGameOver = CreateWidget<UUserWidget>(GetWorld(), WidgetGameOverClass);
 
     if (WidgetHUD) WidgetHUD->AddToViewport();
+    if (WidgetHUD) WidgetPause->AddToViewport();
+    if (WidgetHUD) WidgetGameOver->AddToViewport();
 
     ACitadelGameModeBase* GameMode =
         Cast<ACitadelGameModeBase>(GetWorld()->GetAuthGameMode());
@@ -31,15 +33,16 @@ void AGroundPlayerHUD::OnMatchStateChanged(CitadelMatchState MatchState)
 
     if (MatchState == CitadelMatchState::Pause)
     {
-        if (WidgetPause) WidgetPause->AddToViewport();
+        if (WidgetPause) WidgetPause->SetVisibility(ESlateVisibility::Visible);
     }
     if (MatchState == CitadelMatchState::InProgress)
     {
-        if (WidgetPause) WidgetPause->RemoveFromViewport();
+        if (WidgetPause) WidgetPause->SetVisibility(ESlateVisibility::Hidden);
+        if (WidgetPause) WidgetGameOver->SetVisibility(ESlateVisibility::Hidden);
     }
     if (MatchState == CitadelMatchState::GameOver)
     {
-        if (WidgetPause) WidgetPause->RemoveFromViewport();
-        if (WidgetGameOver) WidgetGameOver->AddToViewport();
+        if (WidgetPause) WidgetPause->SetVisibility(ESlateVisibility::Hidden);
+        if (WidgetPause) WidgetGameOver->SetVisibility(ESlateVisibility::Visible);
     }
 }
