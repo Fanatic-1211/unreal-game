@@ -53,6 +53,7 @@ private:
     void TakeAnyDamage(AActor* DamageActor, float Damage,
         const class UDamageType* DamageType, class AController* InstigatedBy,
         AActor* DamageCauser);
+    void MakeFeelAIAboutIncomingDamage(float DamageAmount, AController* DamagerController);
 
     void YellAboutKill(AController* KillerController);
 };

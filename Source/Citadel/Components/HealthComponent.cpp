@@ -3,6 +3,7 @@
 #include "Components/HealthComponent.h"
 
 #include "GameFramework/Pawn.h"
+#include "Perception/AISense_Damage.h"
 
 #include "CitadelGamemodeBase.h"
 
@@ -45,6 +46,19 @@ void UHealthComponent::TakeAnyDamage(AActor* DamageActor, float Damage,
         YellAboutKill(InstigatedBy);
         OnDeath.Broadcast();
     }
+
+    MakeFeelAIAboutIncomingDamage(Damage, InstigatedBy);
+}
+
+// Notifies AI DamageSense about incoming damage with additional info
+void UHealthComponent::MakeFeelAIAboutIncomingDamage(float DamageAmount, AController* DamagerController)
+{
+    if (!DamagerController || !DamagerController->GetPawn() || !GetOwner()) return;
+
+    UAISense_Damage::ReportDamageEvent(GetWorld(), GetOwner(),
+        DamagerController->GetPawn(), DamageAmount,
+        DamagerController->GetPawn()->GetActorLocation(),
+        GetOwner()->GetActorLocation());
 }
 
 // Notifies GameMode about kill for start victim respawn process and add a score
