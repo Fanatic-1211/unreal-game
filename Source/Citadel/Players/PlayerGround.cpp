@@ -79,8 +79,6 @@ void APlayerGround::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
             &APlayerGround::ToggleCrouch);
     PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this,
             &APlayerGround::ToggleRun);
-    PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this,
-            &APlayerGround::ToggleRun);
     PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, WeaponComponent,
             &UWeaponComponent::Shoot);
     PlayerInputComponent->BindAction(TEXT("SwitchWeapon"), IE_Pressed, WeaponComponent,
@@ -114,10 +112,16 @@ void APlayerGround::LookRight(float AxisValue)
 
 void APlayerGround::ToggleCrouch()
 {
-    if (IsRunning == true) 
-    IsRunning = false;
-
-    (IsCrouching == true) ? IsCrouching = false : IsCrouching = true; 
+    if (IsCrouching)
+    {
+        IsCrouching = false;
+        IsRunning = true;
+    }
+    else
+    {
+        IsCrouching = true;
+        IsRunning = false;
+    }
 }
 
 void APlayerGround::ToggleRun()
