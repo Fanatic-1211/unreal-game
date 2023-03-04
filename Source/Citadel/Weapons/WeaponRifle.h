@@ -16,7 +16,7 @@ class CITADEL_API AWeaponRifle : public AWeaponBase
 public:
     AWeaponRifle();
     virtual void Shoot() override;
-    virtual bool ZoomFOV() override;
+    virtual bool ZoomFOV(bool ZoomON) override;
 
 protected:
     UPROPERTY(

@@ -20,7 +20,7 @@ public:
 
 	void Shoot();
 	void SwitchWeapon();
-    void ToggleZoom();
+    void ToggleZoom(bool ZoomON);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")

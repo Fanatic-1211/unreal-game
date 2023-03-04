@@ -94,9 +94,9 @@ void UWeaponComponent::SwitchWeapon()
         ActiveWeaponSocketName);
 }
 
-void UWeaponComponent::ToggleZoom()
+void UWeaponComponent::ToggleZoom(bool ZoomON)
 {
-    ActiveWeapon->ZoomFOV();
+    ActiveWeapon->ZoomFOV(ZoomON);
 }
 
 void UWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)

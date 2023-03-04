@@ -59,7 +59,7 @@ void AWeaponRifle::GetShotStartEndPoints(
     EndPoint = StartPoint + TraceDirection * WeaponRange;
 }
 
-bool AWeaponRifle::ZoomFOV()
+bool AWeaponRifle::ZoomFOV(bool ZoomON)
 {
     APlayerControllerGround* PlayerController =
         Cast<APlayerControllerGround>(GetOwnerController());
@@ -67,15 +67,13 @@ bool AWeaponRifle::ZoomFOV()
 
     const TInterval<float> FOV(50.f, 90.f);
 
-    if (PlayerController->GetFOVZoomed())
+    if (ZoomON)
     {
-        PlayerController->PlayerCameraManager->SetFOV(FOV.Max);
-        PlayerController->SetFOVZoomed(false);
+        PlayerController->PlayerCameraManager->SetFOV(FOV.Min);
     }
     else
     {
-        PlayerController->PlayerCameraManager->SetFOV(FOV.Min);
-        PlayerController->SetFOVZoomed(true);
+        PlayerController->PlayerCameraManager->SetFOV(FOV.Max);
     }
 
     return true;

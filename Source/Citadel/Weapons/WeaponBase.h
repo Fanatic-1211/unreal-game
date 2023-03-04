@@ -19,7 +19,7 @@ public:
 	AWeaponBase();
 
 	virtual void Shoot();
-    virtual bool ZoomFOV() { return false; };
+    virtual bool ZoomFOV(bool ZoomON) { return false; };
 
 protected:
 	UPROPERTY(EditAnywhere)

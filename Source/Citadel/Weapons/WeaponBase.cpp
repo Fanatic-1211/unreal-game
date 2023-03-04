@@ -59,6 +59,8 @@ void AWeaponBase::GetShotStartEndPoints(
     }
 
     FVector TraceDirection = ViewRotation.Vector();
+    StartPoint =
+        StartPoint + TraceDirection * 100;  // offset for avoid player collision
     EndPoint = StartPoint + TraceDirection * WeaponRange;
 
     FCollisionQueryParams TraceParams(
