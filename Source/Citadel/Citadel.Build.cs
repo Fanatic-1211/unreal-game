@@ -10,7 +10,7 @@ public class Citadel : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", 
 			"Engine", "InputCore", "GameplayTasks", "UMG", "NavigationSystem",
-			"Niagara" });
+			"Niagara", "OnlineSubsystem", "OnlineSubsystemSteam" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
