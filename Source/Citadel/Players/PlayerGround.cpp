@@ -8,6 +8,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "Camera/CameraComponent.h"
+#include "OnlineSubsystem.h"
+#include "Interfaces/OnlineSessionInterface.h"
 
 #include "Components/HealthComponent.h"
 #include "Components/WeaponComponent.h"
@@ -40,6 +42,12 @@ void APlayerGround::BeginPlay()
     PlayerPawn = PlayerController->GetPawn();
 
     SetupHealthComponent();
+
+    IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+    if (OnlineSubsystem)
+    {
+        OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
+    }
 }
 
 // Called every frame

@@ -16,60 +16,62 @@ class UHealthComponent;
 class UTextRenderComponent;
 class UWeaponComponent;
 
-
 UCLASS()
 class CITADEL_API APlayerGround : public ACharacter
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
-	APlayerGround();
-	APlayerGround(const class FObjectInitializer& ObjectInitializer);
+    APlayerGround();
+    APlayerGround(const class FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-	UHealthComponent* HealthComponent;
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UHealthComponent* HealthComponent;
 
-	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(
-		class UInputComponent* PlayerInputComponent) override;
-	void SetPlayerColor(FLinearColor Color);
+    TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe>
+        OnlineSessionInterface; // for multiplayer
 
-	void MoveForward(float AxisValue);
-	void MoveRight(float AxisValue);
-	void LookUp(float AxisValue);
-	void LookRight(float AxisValue);
+    virtual void Tick(float DeltaTime) override;
+    virtual void SetupPlayerInputComponent(
+        class UInputComponent* PlayerInputComponent) override;
+    void SetPlayerColor(FLinearColor Color);
 
-	UFUNCTION(BlueprintPure)
-	bool GetCrouching() { return IsCrouching; };
-	UFUNCTION(BlueprintPure)
-	bool GetRunning() { return IsRunning; };
+    void MoveForward(float AxisValue);
+    void MoveRight(float AxisValue);
+    void LookUp(float AxisValue);
+    void LookRight(float AxisValue);
 
-	UFUNCTION(BlueprintCallable, Category="TextRender")
-	void UpdateHealthRenderText();
+    UFUNCTION(BlueprintPure)
+    bool GetCrouching() { return IsCrouching; };
+    UFUNCTION(BlueprintPure)
+    bool GetRunning() { return IsRunning; };
+
+    UFUNCTION(BlueprintCallable, Category = "TextRender")
+    void UpdateHealthRenderText();
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Materials")
-	FName MaterialColorName = "BodyColor"; // Node name into material asset
+    UPROPERTY(EditDefaultsOnly, Category = "Materials")
+    FName MaterialColorName = "BodyColor";  // Node name into material asset
 
-	virtual void BeginPlay() override;
-	virtual void OnDeath();
+    virtual void BeginPlay() override;
+    virtual void OnDeath();
 
 private:
-	AActor* PlayerPawn;
-	APlayerController* PlayerController;
-	bool IsCrouching = false;
-	bool IsRunning = true;
+    AActor* PlayerPawn;
+    APlayerController* PlayerController;
+    bool IsCrouching = false;
+    bool IsRunning = true;
 
-	UPROPERTY(EditAnywhere)
-	UTextRenderComponent* HealthTextRender;
+    UPROPERTY(EditAnywhere)
+    UTextRenderComponent* HealthTextRender;
 
-	UPROPERTY(EditAnywhere)
-	UWeaponComponent* WeaponComponent;
+    UPROPERTY(EditAnywhere)
+    UWeaponComponent* WeaponComponent;
 
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* DeathAnimMontage;
+    UPROPERTY(EditDefaultsOnly)
+    UAnimMontage* DeathAnimMontage;
 
-	void SetupHealthComponent();
-	void ToggleCrouch();
-	void ToggleRun();
+    void SetupHealthComponent();
+    void ToggleCrouch();
+    void ToggleRun();
 };
