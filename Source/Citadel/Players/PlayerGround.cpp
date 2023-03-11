@@ -9,7 +9,7 @@
 #include "GameFramework/Controller.h"
 #include "Camera/CameraComponent.h"
 #include "OnlineSubsystem.h"
-#include "Interfaces/OnlineSessionInterface.h"
+#include "OnlineSessionSettings.h"
 
 #include "Components/HealthComponent.h"
 #include "Components/WeaponComponent.h"
@@ -17,10 +17,14 @@
 #include "Weapons/WeaponRifle.h"
 
 APlayerGround::APlayerGround(const class FObjectInitializer& ObjectInitializer)
-    : Super(ObjectInitializer.SetDefaultSubobjectClass<
-            UCustomCharacterMovementComponent>(ACharacter::
-              CharacterMovementComponentName))  // overriding
-                                                // CharacterMovementComponent
+    // overriding CharacterMovement:
+    : Super(ObjectInitializer
+                .SetDefaultSubobjectClass<UCustomCharacterMovementComponent>(
+                    ACharacter::CharacterMovementComponentName)),
+      // binding to session delegate (for multiplayer):
+      CreateSessionCompleteDelegate(
+          FOnCreateSessionCompleteDelegate::CreateUObject(
+              this, &APlayerGround::OnCreateSessionComplete))
 {
     PrimaryActorTick.bCanEverTick = true;
 
@@ -179,4 +183,56 @@ void APlayerGround::SetPlayerColor(FLinearColor Color)
     if (!MaterialInst) return;
 
     MaterialInst->SetVectorParameterValue(MaterialColorName, Color);
+}
+
+// --------------------------------------------------
+// MULTIPLAYER FUNCTIONS
+// --------------------------------------------------
+
+void APlayerGround::CreateGameSession()
+{
+    if (!OnlineSessionInterface.IsValid()) return;
+
+    // Check if old gamesession exists:
+    auto ExistingSession =
+        OnlineSessionInterface->GetNamedSession(NAME_GameSession);
+    if (ExistingSession)
+        OnlineSessionInterface->DestroySession(NAME_GameSession);
+
+    OnlineSessionInterface->AddOnCreateSessionCompleteDelegate_Handle(
+        CreateSessionCompleteDelegate);
+
+    TSharedPtr<FOnlineSessionSettings> SessionSettings =
+        MakeShareable(new FOnlineSessionSettings());
+    SessionSettings->bIsLANMatch = false;
+    SessionSettings->NumPublicConnections = 4;
+    SessionSettings->bAllowJoinInProgress = true;
+    SessionSettings->bAllowJoinViaPresence =
+        true;  // check world region for join game
+    SessionSettings->bUsesPresence =
+        true;  // use player world region for search game
+    SessionSettings->bShouldAdvertise =
+        true;  // allow find your session in public
+
+    const ULocalPlayer* LocalPlayer =
+        GetWorld()->GetFirstLocalPlayerFromController();
+
+    OnlineSessionInterface->CreateSession(
+        *LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession,
+        *SessionSettings);
+}
+
+void APlayerGround::OnCreateSessionComplete(
+    FName SessionName, bool bWasSuccessful)
+{
+    if (bWasSuccessful)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue,
+            TEXT("Session created successfull!"), true);
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,
+            TEXT("Session creation failed!"), true);
+    }
 }

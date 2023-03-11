@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/OnlineSessionInterface.h"
 
 #include "Weapons/WeaponBase.h"
 
@@ -28,9 +29,6 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UHealthComponent* HealthComponent;
 
-    TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe>
-        OnlineSessionInterface; // for multiplayer
-
     virtual void Tick(float DeltaTime) override;
     virtual void SetupPlayerInputComponent(
         class UInputComponent* PlayerInputComponent) override;
@@ -51,7 +49,7 @@ public:
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Materials")
-    FName MaterialColorName = "BodyColor";  // Node name into material asset
+    FName MaterialColorName = "BodyColor";  // node name into material asset
 
     virtual void BeginPlay() override;
     virtual void OnDeath();
@@ -74,4 +72,20 @@ private:
     void SetupHealthComponent();
     void ToggleCrouch();
     void ToggleRun();
+
+// MULTIPLAYER
+public:
+    TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe>
+        OnlineSessionInterface;  
+
+protected:
+    UFUNCTION(BlueprintCallable)
+    void CreateGameSession();
+
+    void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
+
+private:
+    FOnCreateSessionCompleteDelegate
+        CreateSessionCompleteDelegate;  // default UE delegate (see
+                                        // documentation)
 };
