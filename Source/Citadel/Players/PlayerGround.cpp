@@ -21,10 +21,14 @@ APlayerGround::APlayerGround(const class FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer
                 .SetDefaultSubobjectClass<UCustomCharacterMovementComponent>(
                     ACharacter::CharacterMovementComponentName)),
-      // binding to session delegate (for multiplayer):
+      // binding to create session delegate (multiplayer):
       CreateSessionCompleteDelegate(
           FOnCreateSessionCompleteDelegate::CreateUObject(
-              this, &APlayerGround::OnCreateSessionComplete))
+              this, &APlayerGround::OnCreateSessionComplete)),
+      // binding to find session delegate (multiplayer):
+      FindSessionsCompleteDelegate(
+          FOnFindSessionsCompleteDelegate::CreateUObject(
+              this, &APlayerGround::OnFindSessionsComplete))
 {
     PrimaryActorTick.bCanEverTick = true;
 
@@ -222,17 +226,49 @@ void APlayerGround::CreateGameSession()
         *SessionSettings);
 }
 
+void APlayerGround::JoinGameSession()
+{
+    if (!OnlineSessionInterface.IsValid()) return;
+
+    OnlineSessionInterface->AddOnFindSessionsCompleteDelegate_Handle(
+        FindSessionsCompleteDelegate);
+
+    SessionSearch = MakeShareable(new FOnlineSessionSearch());
+    SessionSearch->MaxSearchResults = 10000;
+    SessionSearch->bIsLanQuery = false;
+    SessionSearch->QuerySettings.Set(
+        SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals); // search only in player world region
+
+    const ULocalPlayer* LocalPlayer =
+        GetWorld()->GetFirstLocalPlayerFromController();
+
+    OnlineSessionInterface->FindSessions(
+        *LocalPlayer->GetPreferredUniqueNetId(), SessionSearch.ToSharedRef());
+}
+
 void APlayerGround::OnCreateSessionComplete(
     FName SessionName, bool bWasSuccessful)
 {
     if (bWasSuccessful)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue,
-            TEXT("Session created successfull!"), true);
+        GEngine->AddOnScreenDebugMessage(
+            -1, 3.f, FColor::Blue, TEXT("Session created successfull!"), true);
     }
     else
     {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,
-            TEXT("Session creation failed!"), true);
+        GEngine->AddOnScreenDebugMessage(
+            -1, 3.f, FColor::Red, TEXT("Session creation failed!"), true);
+    }
+}
+
+void APlayerGround::OnFindSessionsComplete(bool bWasSuccessful) 
+{
+    for (auto Result : SessionSearch->SearchResults)
+    {
+        FString Id = Result.GetSessionIdStr();
+        FString User = Result.Session.OwningUserName;
+
+        GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green,
+            FString::Printf(TEXT("Id: %s, User: %s"), *Id, *User));
     }
 }

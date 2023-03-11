@@ -82,10 +82,17 @@ protected:
     UFUNCTION(BlueprintCallable)
     void CreateGameSession();
 
+    UFUNCTION(BlueprintCallable)
+    void JoinGameSession();
+
     void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
+    void OnFindSessionsComplete(bool bWasSuccessful);
 
 private:
     FOnCreateSessionCompleteDelegate
         CreateSessionCompleteDelegate;  // default UE delegate (see
                                         // documentation)
+    FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
+
+    TSharedPtr<FOnlineSessionSearch> SessionSearch; // stores session search results etc
 };
