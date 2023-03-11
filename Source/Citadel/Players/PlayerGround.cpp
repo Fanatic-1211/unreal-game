@@ -28,7 +28,10 @@ APlayerGround::APlayerGround(const class FObjectInitializer& ObjectInitializer)
       // binding to find session delegate (multiplayer):
       FindSessionsCompleteDelegate(
           FOnFindSessionsCompleteDelegate::CreateUObject(
-              this, &APlayerGround::OnFindSessionsComplete))
+              this, &APlayerGround::OnFindSessionsComplete)),
+      // binding to join session delegate (multiplayer):
+      JoinSessionCompleteDelegate(FOnJoinSessionCompleteDelegate::CreateUObject(
+          this, &APlayerGround::OnJoinSessionComplete))
 {
     PrimaryActorTick.bCanEverTick = true;
 
@@ -217,6 +220,9 @@ void APlayerGround::CreateGameSession()
         true;  // use player world region for search game
     SessionSettings->bShouldAdvertise =
         true;  // allow find your session in public
+    SessionSettings->Set(FName("MatchType"), FString("FreeForAllCepk"),
+        EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);  // set match
+                                                                 // type
 
     const ULocalPlayer* LocalPlayer =
         GetWorld()->GetFirstLocalPlayerFromController();
@@ -228,7 +234,17 @@ void APlayerGround::CreateGameSession()
 
 void APlayerGround::JoinGameSession()
 {
-    if (!OnlineSessionInterface.IsValid()) return;
+    GEngine->AddOnScreenDebugMessage(
+        -1, 3.f, FColor::Yellow, TEXT("Trying to connect..."), true);
+
+    if (!OnlineSessionInterface.IsValid())
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1, 3.f, FColor::Red, TEXT("Connection failed :("), true);
+        return;
+    }
+
+    
 
     OnlineSessionInterface->AddOnFindSessionsCompleteDelegate_Handle(
         FindSessionsCompleteDelegate);
@@ -236,8 +252,8 @@ void APlayerGround::JoinGameSession()
     SessionSearch = MakeShareable(new FOnlineSessionSearch());
     SessionSearch->MaxSearchResults = 10000;
     SessionSearch->bIsLanQuery = false;
-    SessionSearch->QuerySettings.Set(
-        SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals); // search only in player world region
+    SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true,
+        EOnlineComparisonOp::Equals);  // search only in player world region
 
     const ULocalPlayer* LocalPlayer =
         GetWorld()->GetFirstLocalPlayerFromController();
@@ -252,23 +268,70 @@ void APlayerGround::OnCreateSessionComplete(
     if (bWasSuccessful)
     {
         GEngine->AddOnScreenDebugMessage(
-            -1, 3.f, FColor::Blue, TEXT("Session created successfull!"), true);
+            -1, 3.f, FColor::Green, TEXT("Session created successfully!"), true);
     }
     else
     {
         GEngine->AddOnScreenDebugMessage(
             -1, 3.f, FColor::Red, TEXT("Session creation failed!"), true);
+        return;
+    }
+
+    if (GetWorld())
+    {
+        GetWorld()->ServerTravel(LobbyLevelPath + "?listen");
     }
 }
 
-void APlayerGround::OnFindSessionsComplete(bool bWasSuccessful) 
+void APlayerGround::OnFindSessionsComplete(bool bWasSuccessful)
 {
+    if (!OnlineSessionInterface.IsValid()) return;
+
     for (auto Result : SessionSearch->SearchResults)
     {
         FString Id = Result.GetSessionIdStr();
         FString User = Result.Session.OwningUserName;
+        FString MatchType;
+        Result.Session.SessionSettings.Get(FName("MatchType"), MatchType);
 
         GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green,
             FString::Printf(TEXT("Id: %s, User: %s"), *Id, *User));
+
+        if (MatchType == FString("FreeForAllCepk"))
+        {
+            GEngine->AddOnScreenDebugMessage(
+                -1, 3.f, FColor::Green, TEXT("Game found!"), true);
+
+            const ULocalPlayer* LocalPlayer =
+                GetWorld()->GetFirstLocalPlayerFromController();
+
+            OnlineSessionInterface->AddOnJoinSessionCompleteDelegate_Handle(
+                JoinSessionCompleteDelegate);
+
+            OnlineSessionInterface->JoinSession(
+                *LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession,
+                Result);
+
+            return;
+        }
+    }
+    GEngine->AddOnScreenDebugMessage(
+        -1, 3.f, FColor::Red, TEXT("Can't find any games!"), true);
+}
+void APlayerGround::OnJoinSessionComplete(
+    FName SessionName, EOnJoinSessionCompleteResult::Type Result)
+{
+    if (!OnlineSessionInterface.IsValid()) return;
+
+    FString Address;
+    if (OnlineSessionInterface->GetResolvedConnectString(NAME_GameSession, Address))
+    {
+        APlayerController* PController =
+            GetGameInstance()->GetFirstLocalPlayerController();
+        if (PController)
+        {
+            PController->ClientTravel(
+                Address, ETravelType::TRAVEL_Absolute);
+        }
     }
 }

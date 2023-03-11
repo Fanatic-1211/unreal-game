@@ -73,10 +73,10 @@ private:
     void ToggleCrouch();
     void ToggleRun();
 
-// MULTIPLAYER
+    // MULTIPLAYER
 public:
     TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe>
-        OnlineSessionInterface;  
+        OnlineSessionInterface;
 
 protected:
     UFUNCTION(BlueprintCallable)
@@ -87,12 +87,19 @@ protected:
 
     void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
     void OnFindSessionsComplete(bool bWasSuccessful);
+    void OnJoinSessionComplete(
+        FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 
 private:
+    FString LobbyLevelPath = "MultiplayerLobbyLevel";
+
     FOnCreateSessionCompleteDelegate
         CreateSessionCompleteDelegate;  // default UE delegate (see
                                         // documentation)
-    FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
 
-    TSharedPtr<FOnlineSessionSearch> SessionSearch; // stores session search results etc
+    FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
+    FOnJoinSessionCompleteDelegate JoinSessionCompleteDelegate;
+
+    TSharedPtr<FOnlineSessionSearch>
+        SessionSearch;  // stores session search results etc
 };
