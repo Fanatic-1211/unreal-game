@@ -220,6 +220,7 @@ void APlayerGround::CreateGameSession()
         true;  // use player world region for search game
     SessionSettings->bShouldAdvertise =
         true;  // allow find your session in public
+    SessionSettings->bUseLobbiesIfAvailable = true;
     SessionSettings->Set(FName("MatchType"), FString("FreeForAllCepk"),
         EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);  // set match
                                                                  // type
@@ -243,8 +244,6 @@ void APlayerGround::JoinGameSession()
             -1, 3.f, FColor::Red, TEXT("Connection failed :("), true);
         return;
     }
-
-    
 
     OnlineSessionInterface->AddOnFindSessionsCompleteDelegate_Handle(
         FindSessionsCompleteDelegate);
@@ -294,7 +293,7 @@ void APlayerGround::OnFindSessionsComplete(bool bWasSuccessful)
         FString MatchType;
         Result.Session.SessionSettings.Get(FName("MatchType"), MatchType);
 
-        GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Green,
+        GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue,
             FString::Printf(TEXT("Id: %s, User: %s"), *Id, *User));
 
         if (MatchType == FString("FreeForAllCepk"))
@@ -318,6 +317,7 @@ void APlayerGround::OnFindSessionsComplete(bool bWasSuccessful)
     GEngine->AddOnScreenDebugMessage(
         -1, 3.f, FColor::Red, TEXT("Can't find any games!"), true);
 }
+
 void APlayerGround::OnJoinSessionComplete(
     FName SessionName, EOnJoinSessionCompleteResult::Type Result)
 {
