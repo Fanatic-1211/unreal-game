@@ -1,5 +1,5 @@
 @echo off
-set dirsToRemove=Intermediate Saved DerivedDataCache Binaries Binaries Build .vs
+set dirsToRemove=Intermediate Saved DerivedDataCache Binaries Binaries Build
 set filesToRemove=*.sln
 
 for %%a in (%dirsToRemove%) do (
