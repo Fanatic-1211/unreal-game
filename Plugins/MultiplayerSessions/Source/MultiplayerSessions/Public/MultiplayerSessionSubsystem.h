@@ -8,9 +8,21 @@
 
 #include "MultiplayerSessionSubsystem.generated.h"
 
+// Custom delegates signature creation
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FMultiplayerOnCreateSessionComplete, bool, bWasSuccessful);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FMultiplayerOnDestroySessionComplete, bool, bWasSuccessful);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FMultiplayerOnStartSessionComplete, bool, bWasSuccessful);
+// these can't be DYNAMIC
+DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiplayerOnFindSessionsComplete,
+    const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
+DECLARE_MULTICAST_DELEGATE_OneParam(
+    FMultiplayerOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result);
+
 UCLASS()
-class MULTIPLAYERSESSIONS_API UMultiplayerSessionSubsystem
-    : public UGameInstanceSubsystem
+class MULTIPLAYERSESSIONS_API UMultiplayerSessionSubsystem : public UGameInstanceSubsystem
 {
     GENERATED_BODY()
 public:
@@ -23,11 +35,17 @@ public:
     void DestroySession();
     void StartSession();
 
+    // Custom delegates declaration
+    FMultiplayerOnCreateSessionComplete MultiplayerOnCreateSessionComplete;
+    FMultiplayerOnFindSessionsComplete MultiplayerOnFindSessionsComplete;
+    FMultiplayerOnJoinSessionComplete MultiplayerOnJoinSessionComplete;
+    FMultiplayerOnDestroySessionComplete MultiplayerOnDestroySessionComplete;
+    FMultiplayerOnStartSessionComplete MultiplayerOnStartSessionComplete;
+
 protected:
     void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
     void OnFindSessionsComplete(bool bWasSuccessful);
-    void OnJoinSessionComplete(
-        FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+    void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
     void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
     void OnStartSessionComplete(FName SessionName, bool bWasSuccessful);
 
@@ -35,6 +53,7 @@ private:
     IOnlineSessionPtr SessionInterface;
     TSharedPtr<FOnlineSessionSettings> LastSessionSettings;
 
+    // Default UE OnlineSubsystem delegates
     FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
     FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
     FOnJoinSessionCompleteDelegate JoinSessionCompleteDelegate;
@@ -47,5 +66,3 @@ private:
     FDelegateHandle DestroySessionCompleteDelegateHandle;
     FDelegateHandle StartSessionCompleteDelegateHandle;
 };
-
-

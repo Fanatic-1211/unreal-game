@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/OnlineSessionInterface.h"
 
 #include "MenuMultiplayer.generated.h"
 
@@ -13,15 +14,27 @@ class UMultiplayerSessionSubsystem;
 UCLASS()
 class MULTIPLAYERSESSIONS_API UMenuMultiplayer : public UUserWidget
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
     UFUNCTION(BlueprintCallable)
-    void MenuSetup(int32 NumberOfPublicConnections = 4, FString TypeOfMatch = TEXT("FreeForAllCepk"));
+    void MenuSetup(
+        int32 NumberOfPublicConnections = 4, FString TypeOfMatch = TEXT("FreeForAllCepk"));
 
 protected:
     virtual void NativeOnInitialized() override;
     virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
+
+    // Callbacks for custom delegates
+    UFUNCTION()
+    void OnCreateSession(bool bWasSuccessful);
+    UFUNCTION()
+    void OnStartSession(bool bWasSuccessful);
+    UFUNCTION()
+    void OnDestroySession(bool bWasSuccessful);
+
+    void OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
+    void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
 
 private:
     UMultiplayerSessionSubsystem* MultiplayerSubsystem;
@@ -31,12 +44,12 @@ private:
 
     UPROPERTY(meta = (BindWidget))
     UButton* HostButton;
-	UPROPERTY(meta = (BindWidget))
+    UPROPERTY(meta = (BindWidget))
     UButton* JoinButton;
 
-	UFUNCTION()
+    UFUNCTION()
     void HostButtonClicked();
-	UFUNCTION()
+    UFUNCTION()
     void JoinButtonClicked();
 
     void MenuTearDown();

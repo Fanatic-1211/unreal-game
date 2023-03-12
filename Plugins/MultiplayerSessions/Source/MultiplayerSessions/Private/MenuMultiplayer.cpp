@@ -29,7 +29,7 @@ void UMenuMultiplayer::MenuSetup(int32 NumberOfPublicConnections, FString TypeOf
 {
     NumPublicConnections = NumberOfPublicConnections;
     MatchType = TypeOfMatch;
-    
+
     AddToViewport();
     SetVisibility(ESlateVisibility::Visible);
     bIsFocusable = true;
@@ -47,6 +47,22 @@ void UMenuMultiplayer::MenuSetup(int32 NumberOfPublicConnections, FString TypeOf
             PlayerController->SetInputMode(InputModeData);
             PlayerController->SetShowMouseCursor(true);
         }
+    }
+
+    // When we broadcast delegates in MultiplayerSessionSybsystem,
+    // this class will know about it and calls binded functions:
+    if (MultiplayerSubsystem)
+    {
+        MultiplayerSubsystem->MultiplayerOnCreateSessionComplete.AddDynamic(
+            this, &ThisClass::OnCreateSession);
+        MultiplayerSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(
+            this, &ThisClass::OnDestroySession);
+        MultiplayerSubsystem->MultiplayerOnStartSessionComplete.AddDynamic(
+            this, &ThisClass::OnStartSession);
+        MultiplayerSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(
+            this, &ThisClass::OnFindSessions);
+        MultiplayerSubsystem->MultiplayerOnJoinSessionComplete.AddUObject(
+            this, &ThisClass::OnJoinSession);
     }
 }
 
@@ -71,15 +87,52 @@ void UMenuMultiplayer::HostButtonClicked()
 {
     GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::White, FString(TEXT("HostButton clicked!")));
 
-    if (MultiplayerSubsystem)
-        MultiplayerSubsystem->CreateSession(NumPublicConnections, MatchType);
-
-    if (GetWorld())
-        GetWorld()->ServerTravel(
-            "/Game/Levels/MultiplayerLobbyLevel?listen");  // TODO: remove hardcode
+    if (MultiplayerSubsystem) MultiplayerSubsystem->CreateSession(NumPublicConnections, MatchType);
 }
 
 void UMenuMultiplayer::JoinButtonClicked()
 {
     GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::White, FString(TEXT("JoinButton clicked!")));
+}
+
+// ---------------------------------------
+// Callbacks definition
+// ---------------------------------------
+void UMenuMultiplayer::OnCreateSession(bool bWasSuccessful)
+{
+    if (bWasSuccessful)
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1, 3.f, FColor::Green, FString(TEXT("Session created succsessfully!")));
+
+        if (GetWorld())
+            GetWorld()->ServerTravel(
+                "/Game/Levels/MultiplayerLobbyLevel?listen");  // TODO: remove hardcode
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1, 3.f, FColor::Red, FString(TEXT("Session creation failed!")));
+    }
+}
+
+void UMenuMultiplayer::OnStartSession(bool bWasSuccessful)
+{
+    
+}
+
+void UMenuMultiplayer::OnDestroySession(bool bWasSuccessful)
+{
+    
+}
+
+void UMenuMultiplayer::OnFindSessions(const
+        TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
+{
+    
+}
+
+void UMenuMultiplayer::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
+{
+    
 }
