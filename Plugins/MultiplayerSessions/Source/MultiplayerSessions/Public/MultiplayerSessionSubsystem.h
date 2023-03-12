@@ -33,6 +33,7 @@ protected:
 
 private:
     IOnlineSessionPtr SessionInterface;
+    TSharedPtr<FOnlineSessionSettings> LastSessionSettings;
 
     FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
     FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
