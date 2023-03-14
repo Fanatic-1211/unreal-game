@@ -3,8 +3,12 @@
 #include "MenuMultiplayer.h"
 
 #include "Components/Button.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
 
 #include "MultiplayerSessionSubsystem.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogMenuMultiplayer, All, All);
 
 void UMenuMultiplayer::NativeOnInitialized()
 {
@@ -30,6 +34,7 @@ void UMenuMultiplayer::MenuSetup(int32 NumberOfPublicConnections, FString TypeOf
     NumPublicConnections = NumberOfPublicConnections;
     MatchType = TypeOfMatch;
 
+    // Widget and player input setup:
     AddToViewport();
     SetVisibility(ESlateVisibility::Visible);
     bIsFocusable = true;
@@ -49,8 +54,7 @@ void UMenuMultiplayer::MenuSetup(int32 NumberOfPublicConnections, FString TypeOf
         }
     }
 
-    // When we broadcast delegates in MultiplayerSessionSybsystem,
-    // this class will know about it and calls binded functions:
+    // Binding callbacks to delegates:
     if (MultiplayerSubsystem)
     {
         MultiplayerSubsystem->MultiplayerOnCreateSessionComplete.AddDynamic(
@@ -66,7 +70,6 @@ void UMenuMultiplayer::MenuSetup(int32 NumberOfPublicConnections, FString TypeOf
     }
 }
 
-// Removes menu widget and reset input to default value
 void UMenuMultiplayer::MenuTearDown()
 {
     RemoveFromParent();
@@ -86,6 +89,8 @@ void UMenuMultiplayer::MenuTearDown()
 void UMenuMultiplayer::HostButtonClicked()
 {
     GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::White, FString(TEXT("HostButton clicked!")));
+    UE_LOG(LogMenuMultiplayer, Display, TEXT("Host Button clicked."));
+    UE_LOG(LogTemp, Error, TEXT("Host Button clicked."));
 
     if (MultiplayerSubsystem) MultiplayerSubsystem->CreateSession(NumPublicConnections, MatchType);
 }
@@ -93,10 +98,13 @@ void UMenuMultiplayer::HostButtonClicked()
 void UMenuMultiplayer::JoinButtonClicked()
 {
     GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::White, FString(TEXT("JoinButton clicked!")));
+    UE_LOG(LogMenuMultiplayer, Display, TEXT("Join Button clicked."));
+
+    if (MultiplayerSubsystem) MultiplayerSubsystem->FindSessions(10000);
 }
 
 // ---------------------------------------
-// Callbacks definition
+// Callbacks definitions
 // ---------------------------------------
 void UMenuMultiplayer::OnCreateSession(bool bWasSuccessful)
 {
@@ -116,23 +124,46 @@ void UMenuMultiplayer::OnCreateSession(bool bWasSuccessful)
     }
 }
 
-void UMenuMultiplayer::OnStartSession(bool bWasSuccessful)
-{
-    
-}
+void UMenuMultiplayer::OnStartSession(bool bWasSuccessful) {}
 
-void UMenuMultiplayer::OnDestroySession(bool bWasSuccessful)
-{
-    
-}
+void UMenuMultiplayer::OnDestroySession(bool bWasSuccessful) {}
 
-void UMenuMultiplayer::OnFindSessions(const
-        TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
+void UMenuMultiplayer::OnFindSessions(
+    const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
 {
-    
+    for (auto Result : SessionResults)
+    {
+        if (MultiplayerSubsystem == nullptr) return;
+
+        FString SettingsValue;
+        Result.Session.SessionSettings.Get(FName("MatchType"), SettingsValue);
+
+        if (SettingsValue == MatchType)
+        {
+            MultiplayerSubsystem->JoinSession(Result);
+            return;
+        }
+    }
 }
 
 void UMenuMultiplayer::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 {
-    
+    IOnlineSubsystem* OnlineSystem = IOnlineSubsystem::Get();
+
+    if (OnlineSystem)
+    {
+        IOnlineSessionPtr SessionInterface = OnlineSystem->GetSessionInterface();
+
+        if (SessionInterface.IsValid())
+        {
+            FString Address;
+            SessionInterface->GetResolvedConnectString(NAME_GameSession, Address);
+
+            APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+            if (PlayerController)
+            {
+                PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+            }
+        }
+    }
 }

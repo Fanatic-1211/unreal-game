@@ -11,21 +11,29 @@
 class UButton;
 class UMultiplayerSessionSubsystem;
 
+/*
+ * Class with logic for multiplayer visual menu.
+ */
 UCLASS()
 class MULTIPLAYERSESSIONS_API UMenuMultiplayer : public UUserWidget
 {
     GENERATED_BODY()
 
 public:
+    // Adds widget to viewport and binds callbacks to delegates
     UFUNCTION(BlueprintCallable)
     void MenuSetup(
         int32 NumberOfPublicConnections = 4, FString TypeOfMatch = TEXT("FreeForAllCepk"));
 
 protected:
-    virtual void NativeOnInitialized() override;
-    virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
+    virtual void NativeOnInitialized() override;  // begin play analog for widgets
+    virtual void OnLevelRemovedFromWorld(
+        ULevel* InLevel, UWorld* InWorld) override;  // default UE callback
 
     // Callbacks for custom delegates
+    void OnFindSessions(
+        const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
+    void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
     UFUNCTION()
     void OnCreateSession(bool bWasSuccessful);
     UFUNCTION()
@@ -33,13 +41,10 @@ protected:
     UFUNCTION()
     void OnDestroySession(bool bWasSuccessful);
 
-    void OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful);
-    void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
-
 private:
-    UMultiplayerSessionSubsystem* MultiplayerSubsystem;
+    UMultiplayerSessionSubsystem* MultiplayerSubsystem;  // custom class with main multiplayer logic
 
-    int32 NumPublicConnections = 4;
+    int32 NumPublicConnections = 4;  // max players in one session
     FString MatchType = TEXT("FreeForAllCepk");
 
     UPROPERTY(meta = (BindWidget))
@@ -52,5 +57,6 @@ private:
     UFUNCTION()
     void JoinButtonClicked();
 
+    // Removes menu widget and reset input to default value
     void MenuTearDown();
 };

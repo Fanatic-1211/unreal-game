@@ -52,6 +52,7 @@ protected:
 private:
     IOnlineSessionPtr SessionInterface;
     TSharedPtr<FOnlineSessionSettings> LastSessionSettings;
+    TSharedPtr<FOnlineSessionSearch> LastSessionSearch;
 
     // Default UE OnlineSubsystem delegates
     FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
