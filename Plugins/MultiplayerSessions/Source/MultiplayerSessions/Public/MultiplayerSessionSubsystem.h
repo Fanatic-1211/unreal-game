@@ -8,7 +8,7 @@
 
 #include "MultiplayerSessionSubsystem.generated.h"
 
-// Custom delegates signature creation
+// Custom delegates signatures:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
     FMultiplayerOnCreateSessionComplete, bool, bWasSuccessful);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
@@ -28,14 +28,14 @@ class MULTIPLAYERSESSIONS_API UMultiplayerSessionSubsystem : public UGameInstanc
 public:
     UMultiplayerSessionSubsystem();
 
-    // Functions for call from Menu
+    // Functions for call from Menu:
     void CreateSession(int32 NumPublicConnections, FString MatchType);
     void FindSessions(int32 MaxSearchResults);
     void JoinSession(const FOnlineSessionSearchResult& SessionResult);
     void DestroySession();
     void StartSession();
 
-    // Custom delegates declaration
+    // Custom delegates declaration:
     FMultiplayerOnCreateSessionComplete MultiplayerOnCreateSessionComplete;
     FMultiplayerOnFindSessionsComplete MultiplayerOnFindSessionsComplete;
     FMultiplayerOnJoinSessionComplete MultiplayerOnJoinSessionComplete;
@@ -51,8 +51,8 @@ protected:
 
 private:
     IOnlineSessionPtr SessionInterface;
-    TSharedPtr<FOnlineSessionSettings> LastSessionSettings;
-    TSharedPtr<FOnlineSessionSearch> LastSessionSearch;
+    TSharedPtr<FOnlineSessionSettings> LastSessionSettings;  // stores various settings for session
+    TSharedPtr<FOnlineSessionSearch> LastSessionSearch;      // stores search results
 
     // Default UE OnlineSubsystem delegates
     FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;

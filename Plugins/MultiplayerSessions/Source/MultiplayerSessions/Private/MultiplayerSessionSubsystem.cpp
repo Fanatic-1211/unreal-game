@@ -5,6 +5,8 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 
+DEFINE_LOG_CATEGORY_STATIC(Log_MultiplayerSessionSubsystem, All, All);
+
 UMultiplayerSessionSubsystem::UMultiplayerSessionSubsystem()
     : CreateSessionCompleteDelegate(FOnCreateSessionCompleteDelegate::CreateUObject(
           this, &ThisClass::OnCreateSessionComplete)),
@@ -20,6 +22,9 @@ UMultiplayerSessionSubsystem::UMultiplayerSessionSubsystem()
     IOnlineSubsystem* OnlineSystem = IOnlineSubsystem::Get();
 
     if (OnlineSystem) SessionInterface = OnlineSystem->GetSessionInterface();
+
+    UE_LOG(Log_MultiplayerSessionSubsystem, VeryVerbose,
+        TEXT("MultiplayerSessionSubsystem Constructor worked successfully."));
 }
 
 void UMultiplayerSessionSubsystem::CreateSession(int32 NumPublicConnections, FString MatchType)
@@ -29,7 +34,7 @@ void UMultiplayerSessionSubsystem::CreateSession(int32 NumPublicConnections, FSt
     auto ExistingSession = SessionInterface->GetNamedSession(NAME_GameSession);
     if (ExistingSession != nullptr) SessionInterface->DestroySession(NAME_GameSession);
 
-    // Store delegate in handle for later remove it from the delegate list
+    // Store delegate in handle for later remove it from the delegate list:
     CreateSessionCompleteDelegateHandle =
         SessionInterface->AddOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegate);
 
@@ -51,12 +56,18 @@ void UMultiplayerSessionSubsystem::CreateSession(int32 NumPublicConnections, FSt
     if (!SessionInterface->CreateSession(
             *LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *LastSessionSettings))
     {
+        UE_LOG(Log_MultiplayerSessionSubsystem, Error,
+            TEXT("CreateSession: Session creation failed!"));
+
         SessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(
             CreateSessionCompleteDelegateHandle);
 
-        // Broadcast custom delegate:
+        // Broadcast to custom delegate:
         MultiplayerOnCreateSessionComplete.Broadcast(false);
     }
+
+    UE_LOG(
+        Log_MultiplayerSessionSubsystem, Log, TEXT("CreateSession: Session created successfully."));
 }
 
 void UMultiplayerSessionSubsystem::FindSessions(int32 MaxSearchResults)
@@ -77,16 +88,24 @@ void UMultiplayerSessionSubsystem::FindSessions(int32 MaxSearchResults)
     if (!SessionInterface->FindSessions(
             *LocalPlayer->GetPreferredUniqueNetId(), LastSessionSearch.ToSharedRef()))
     {
+        UE_LOG(Log_MultiplayerSessionSubsystem, Error, TEXT("FindSessions: Session search error!"));
+
         SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(
             FindSessionsCompleteDelegateHandle);
         MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
     }
+
+    UE_LOG(
+        Log_MultiplayerSessionSubsystem, Log, TEXT("FindSessions: Sessions found successfully."));
 }
 
 void UMultiplayerSessionSubsystem::JoinSession(const FOnlineSessionSearchResult& SessionResult)
 {
     if (!SessionInterface.IsValid())
     {
+        UE_LOG(Log_MultiplayerSessionSubsystem, Error,
+            TEXT("JoinSession: SessionInterface has not found!"));
+
         MultiplayerOnJoinSessionComplete.Broadcast(EOnJoinSessionCompleteResult::UnknownError);
         return;
     }
@@ -99,10 +118,15 @@ void UMultiplayerSessionSubsystem::JoinSession(const FOnlineSessionSearchResult&
     if (!SessionInterface->JoinSession(
             *LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, SessionResult))
     {
+        UE_LOG(Log_MultiplayerSessionSubsystem, Error, TEXT("JoinSession: Session join error!"));
+
         SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(
             JoinSessionCompleteDelegateHandle);
         MultiplayerOnJoinSessionComplete.Broadcast(EOnJoinSessionCompleteResult::UnknownError);
     }
+
+    UE_LOG(
+        Log_MultiplayerSessionSubsystem, Log, TEXT("JoinSession: Successfully join to session."));
 }
 
 void UMultiplayerSessionSubsystem::DestroySession() {}
@@ -118,7 +142,8 @@ void UMultiplayerSessionSubsystem::OnCreateSessionComplete(FName SessionName, bo
     // Broadcast custom delegate:
     MultiplayerOnCreateSessionComplete.Broadcast(bWasSuccessful);
 
-    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, FString(TEXT("Session created!")));
+    UE_LOG(Log_MultiplayerSessionSubsystem, Log,
+        TEXT("OnCreateSessionComplete: Session creation complete."));
 }
 
 void UMultiplayerSessionSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
@@ -129,11 +154,17 @@ void UMultiplayerSessionSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
 
     if (LastSessionSearch->SearchResults.Num() <= 0)
     {
+        UE_LOG(Log_MultiplayerSessionSubsystem, Error,
+            TEXT("OnFindSessionsComplete: Session search failed!"));
+
         MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
         return;
     }
 
     MultiplayerOnFindSessionsComplete.Broadcast(LastSessionSearch->SearchResults, bWasSuccessful);
+
+    UE_LOG(Log_MultiplayerSessionSubsystem, Log,
+        TEXT("OnFindSessionsComplete: Session search complete successfully."));
 }
 
 void UMultiplayerSessionSubsystem::OnJoinSessionComplete(
@@ -144,6 +175,9 @@ void UMultiplayerSessionSubsystem::OnJoinSessionComplete(
             JoinSessionCompleteDelegateHandle);
 
     MultiplayerOnJoinSessionComplete.Broadcast(Result);
+
+    UE_LOG(Log_MultiplayerSessionSubsystem, Log,
+        TEXT("OnJoinSessionComplete: Successfully joined to session."));
 }
 
 void UMultiplayerSessionSubsystem::OnDestroySessionComplete(FName SessionName, bool bWasSuccessful)

@@ -8,10 +8,12 @@
 
 #include "MultiplayerSessionSubsystem.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogMenuMultiplayer, All, All);
+DEFINE_LOG_CATEGORY_STATIC(Log_MenuMultiplayer, All, All);
 
 void UMenuMultiplayer::NativeOnInitialized()
 {
+    UE_LOG(Log_MenuMultiplayer, Verbose, TEXT("NativeOnInitialized: started..."));
+
     Super::NativeOnInitialized();
 
     if (HostButton) HostButton->OnClicked.AddDynamic(this, &ThisClass::HostButtonClicked);
@@ -19,7 +21,10 @@ void UMenuMultiplayer::NativeOnInitialized()
 
     UGameInstance* GameInstance = GetGameInstance();
     if (GameInstance)
+    {
         MultiplayerSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionSubsystem>();
+        UE_LOG(Log_MenuMultiplayer, Verbose, TEXT("NativeOnInitialized: Successfully finished."));
+    }
 }
 
 // Calls when level changes
@@ -67,6 +72,9 @@ void UMenuMultiplayer::MenuSetup(int32 NumberOfPublicConnections, FString TypeOf
             this, &ThisClass::OnFindSessions);
         MultiplayerSubsystem->MultiplayerOnJoinSessionComplete.AddUObject(
             this, &ThisClass::OnJoinSession);
+
+        UE_LOG(Log_MenuMultiplayer, VeryVerbose,
+            TEXT("MenuSetup: All delegates have binded successfully."));
     }
 }
 
@@ -88,17 +96,14 @@ void UMenuMultiplayer::MenuTearDown()
 
 void UMenuMultiplayer::HostButtonClicked()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::White, FString(TEXT("HostButton clicked!")));
-    UE_LOG(LogMenuMultiplayer, Display, TEXT("Host Button clicked."));
-    UE_LOG(LogTemp, Error, TEXT("Host Button clicked."));
+    UE_LOG(Log_MenuMultiplayer, Display, TEXT("Host Button clicked."));
 
     if (MultiplayerSubsystem) MultiplayerSubsystem->CreateSession(NumPublicConnections, MatchType);
 }
 
 void UMenuMultiplayer::JoinButtonClicked()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::White, FString(TEXT("JoinButton clicked!")));
-    UE_LOG(LogMenuMultiplayer, Display, TEXT("Join Button clicked."));
+    UE_LOG(Log_MenuMultiplayer, Display, TEXT("Join Button clicked."));
 
     if (MultiplayerSubsystem) MultiplayerSubsystem->FindSessions(10000);
 }
@@ -110,8 +115,8 @@ void UMenuMultiplayer::OnCreateSession(bool bWasSuccessful)
 {
     if (bWasSuccessful)
     {
-        GEngine->AddOnScreenDebugMessage(
-            -1, 3.f, FColor::Green, FString(TEXT("Session created succsessfully!")));
+        UE_LOG(Log_MenuMultiplayer, Log,
+            TEXT("Session created succsessfully! Starting travel to lobby level..."));
 
         if (GetWorld())
             GetWorld()->ServerTravel(
@@ -119,8 +124,7 @@ void UMenuMultiplayer::OnCreateSession(bool bWasSuccessful)
     }
     else
     {
-        GEngine->AddOnScreenDebugMessage(
-            -1, 3.f, FColor::Red, FString(TEXT("Session creation failed!")));
+        UE_LOG(Log_MenuMultiplayer, Error, TEXT("OnCreateSession: Session creation failed!"));
     }
 }
 
@@ -131,6 +135,8 @@ void UMenuMultiplayer::OnDestroySession(bool bWasSuccessful) {}
 void UMenuMultiplayer::OnFindSessions(
     const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
 {
+    UE_LOG(Log_MenuMultiplayer, Log, TEXT("OnFindSessions: Searching proper session..."));
+
     for (auto Result : SessionResults)
     {
         if (MultiplayerSubsystem == nullptr) return;
@@ -140,14 +146,20 @@ void UMenuMultiplayer::OnFindSessions(
 
         if (SettingsValue == MatchType)
         {
+            UE_LOG(Log_MenuMultiplayer, Log, TEXT("Proper session found."));
             MultiplayerSubsystem->JoinSession(Result);
             return;
         }
     }
+
+    UE_LOG(Log_MenuMultiplayer, Warning, TEXT("OnFindSessions: Proper session doesn't found!"));
+    return;
 }
 
 void UMenuMultiplayer::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 {
+    UE_LOG(Log_MenuMultiplayer, Log, TEXT("OnJoinSession: Trying to connect to host..."));
+
     IOnlineSubsystem* OnlineSystem = IOnlineSubsystem::Get();
 
     if (OnlineSystem)
