@@ -142,11 +142,15 @@ void UMenuMultiplayer::OnFindSessions(
         if (MultiplayerSubsystem == nullptr) return;
 
         FString SettingsValue;
+        FString Id = Result.GetSessionIdStr();
+        FString User = Result.Session.OwningUserName;
         Result.Session.SessionSettings.Get(FName("MatchType"), SettingsValue);
+        UE_LOG(
+            Log_MenuMultiplayer, VeryVerbose, TEXT("Sessions search: Id %s, User %s"), *Id, *User);
 
         if (SettingsValue == MatchType)
         {
-            UE_LOG(Log_MenuMultiplayer, Log, TEXT("Proper session found."));
+            UE_LOG(Log_MenuMultiplayer, Log, TEXT("Proper session found: %s, %s"), *Id, *User);
             MultiplayerSubsystem->JoinSession(Result);
             return;
         }

@@ -9,6 +9,8 @@
 #include "Players/PlayerGround.h"
 #include "Components/RespawnComponent.h"
 
+DEFINE_LOG_CATEGORY_STATIC(Log_CitadelGameModeBase, All, All);
+
 ACitadelGameModeBase::ACitadelGameModeBase()
 {
     PlayerStateClass = APlayerStateBase::StaticClass();
@@ -35,19 +37,28 @@ UClass* ACitadelGameModeBase::GetDefaultPawnClassForController_Implementation(
     return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 
-void ACitadelGameModeBase::ConfirmKill(
-    AController* KillerController, AController* VictimController)
+void ACitadelGameModeBase::ConfirmKill(AController* KillerController, AController* VictimController)
 {
-    APlayerStateBase* VictimState =
-        Cast<APlayerStateBase>(VictimController->PlayerState);
+    UE_LOG(Log_CitadelGameModeBase, Log, TEXT("%s has killed %s!"), *KillerController->GetName(),
+        *VictimController->GetName());
 
-    if (KillerController)  // should we count kill or not
+    APlayerStateBase* VictimState = Cast<APlayerStateBase>(VictimController->PlayerState);
+
+    // Check should we count kill or not:
+    if (KillerController)
     {
-        APlayerStateBase* KillerState =
-            Cast<APlayerStateBase>(KillerController->PlayerState);
+        APlayerStateBase* KillerState = Cast<APlayerStateBase>(KillerController->PlayerState);
 
         if (KillerController != VictimController)  // is not suicide?
+        {
             KillerState->AddKill();
+            UE_LOG(Log_CitadelGameModeBase, Verbose, TEXT("Kill has counted."));
+        }
+        else
+        {
+            UE_LOG(Log_CitadelGameModeBase, Log,
+                TEXT("ConfirmKill: Kill has not counted, because this was a suicide."));
+        }
     }
 
     VictimState->AddDeath();
@@ -60,15 +71,16 @@ void ACitadelGameModeBase::RequestRespawn(AController* Controller)
 
     ResetOnePlayer(Controller);
 
-    UE_LOG(LogTemp, Display, TEXT("%s has respawned."), *Controller->GetName());
+    UE_LOG(Log_CitadelGameModeBase, Log, TEXT("%s has respawned."), *Controller->GetName());
 }
 
-bool ACitadelGameModeBase::SetPause(
-    APlayerController* PC, FCanUnpause CanUnpauseDelegate)
+bool ACitadelGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate)
 {
     IsPauseSet = Super::SetPause(PC, CanUnpauseDelegate);
 
     if (IsPauseSet) SetMatchState(CitadelMatchState::Pause);
+
+    UE_LOG(Log_CitadelGameModeBase, Display, TEXT("Game paused by %s."), *PC->GetName());
 
     return IsPauseSet;
 }
@@ -79,6 +91,8 @@ bool ACitadelGameModeBase::ClearPause()
 
     if (!IsPauseSet) SetMatchState(CitadelMatchState::InProgress);
 
+    UE_LOG(Log_CitadelGameModeBase, Display, TEXT("Game resumed."));
+
     return !IsPauseSet;
 }
 
@@ -86,10 +100,10 @@ void ACitadelGameModeBase::StartNewRound()
 {
     RoundCountdown = GameData.RoundDuration;
 
-    GetWorldTimerManager().SetTimer(RoundTimerHandle, this,
-        &ACitadelGameModeBase::UpdateRoundTimer, 1.f, true);
+    GetWorldTimerManager().SetTimer(
+        RoundTimerHandle, this, &ACitadelGameModeBase::UpdateRoundTimer, 1.f, true);
 
-    UE_LOG(LogTemp, Warning, TEXT("New Round Started!"));
+    UE_LOG(Log_CitadelGameModeBase, Display, TEXT("New Round Started!"));
 }
 
 void ACitadelGameModeBase::UpdateRoundTimer()
@@ -100,9 +114,9 @@ void ACitadelGameModeBase::UpdateRoundTimer()
 
         if (CurrentRound + 1 <= GameData.RoundsNum)
         {
-            ++CurrentRound;
             StartNewRound();
             ResetPlayers();
+            ++CurrentRound;
         }
         else
         {
@@ -113,34 +127,34 @@ void ACitadelGameModeBase::UpdateRoundTimer()
 
 void ACitadelGameModeBase::SpawnBots()
 {
+    UE_LOG(Log_CitadelGameModeBase, Verbose, TEXT("SpawnBots: Starting spawn bots..."));
     if (!GetWorld()) return;
 
     for (int32 i = 0; i < GameData.PlayersNum; ++i)
     {
         FActorSpawnParameters SpawnInfo;
-        SpawnInfo.SpawnCollisionHandlingOverride =
-            ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
         AAIController* Controller =
             GetWorld()->SpawnActor<AAIController>(AIControllerClass, SpawnInfo);
 
         RestartPlayer(Controller);
     }
+
+    UE_LOG(Log_CitadelGameModeBase, Verbose, TEXT("SpawnBots: Bots spawn completed."));
 }
 
 void ACitadelGameModeBase::ResetPlayers()
 {
     for (auto It = GetWorld()->GetControllerIterator(); It; It++)
-    {
         ResetOnePlayer(It->Get());
-    }
 }
 
 void ACitadelGameModeBase::ResetOnePlayer(AController* PlayerController)
 {
-    if (PlayerController && PlayerController->GetPawn())
-        PlayerController->GetPawn()->Reset();
+    if (PlayerController && PlayerController->GetPawn()) PlayerController->GetPawn()->Reset();
 
-    RestartPlayer(PlayerController);  // GamemodeBase default function
+    RestartPlayer(PlayerController);  // UE GamemodeBase default function
     SetPlayerColor(PlayerController);
 }
 
@@ -155,12 +169,10 @@ void ACitadelGameModeBase::CreateTeamsInfo()
         AController* Controller = It->Get();
         if (!Controller) continue;
 
-        APlayerStateBase* PlayerState =
-            Cast<APlayerStateBase>(Controller->PlayerState);
+        APlayerStateBase* PlayerState = Cast<APlayerStateBase>(Controller->PlayerState);
         if (!PlayerState) continue;
 
-        PlayerState->SetPlayerName(
-            Controller->IsPlayerController() ? "Player" : "Bot");
+        PlayerState->SetPlayerName(Controller->IsPlayerController() ? "Player" : "Bot");
         PlayerState->SetTeamID(CurrentTeamID);
         PlayerState->SetTeamColor(DetermineColorByTeamID(CurrentTeamID));
         SetPlayerColor(Controller);
@@ -177,9 +189,8 @@ FLinearColor ACitadelGameModeBase::DetermineColorByTeamID(int32 TeamID) const
     }
     else
     {
-        UE_LOG(LogTemp, Error,
-            TEXT("There is no that index in GameData.TeamColors array!"));
-
+        UE_LOG(Log_CitadelGameModeBase, Warning,
+            TEXT("There is no that index in GameData.TeamColors array! Seting default color."));
         return GameData.DefaultTeamColor;
     }
 }
@@ -191,39 +202,20 @@ void ACitadelGameModeBase::SetPlayerColor(AController* Controller)
     APlayerGround* Pawn = Cast<APlayerGround>(Controller->GetPawn());
     if (!Pawn) return;
 
-    APlayerStateBase* PlayerState =
-        Cast<APlayerStateBase>(Controller->PlayerState);
+    APlayerStateBase* PlayerState = Cast<APlayerStateBase>(Controller->PlayerState);
     if (!PlayerState) return;
 
     Pawn->SetPlayerColor(PlayerState->GetTeamColor());
 }
 
-void ACitadelGameModeBase::PrintPlayerStatistic()
-{
-    AController* PlayerController = GetWorld()->GetFirstPlayerController();
-    if (!PlayerController) return;
-
-    APlayerStateBase* PlayerState =
-        Cast<APlayerStateBase>(PlayerController->PlayerState);
-    if (!PlayerState) return;
-
-    UE_LOG(LogTemp, Warning, TEXT("Your stats:\n Kills: %i \n Deaths: %i\n"),
-        PlayerState->GetKillsNum(), PlayerState->GetDeathsNum());
-}
-
 void ACitadelGameModeBase::StartRespawnProcess(AController* Controller)
 {
-
-    UE_LOG(LogTemp, Warning, TEXT("Starting respawn process..."));
-
-    URespawnComponent* RespawnComponent =
-        Controller->FindComponentByClass<URespawnComponent>();
+    URespawnComponent* RespawnComponent = Controller->FindComponentByClass<URespawnComponent>();
 
     if (!RespawnComponent)
     {
-        UE_LOG(LogTemp, Error,
-            TEXT("CitadelGameModeBase:StartRespawnProcess \n"
-                 "%s: RespawnComponent doesn't found!"),
+        UE_LOG(Log_CitadelGameModeBase, Error,
+            TEXT("StartRespawnProcess: %s - RespawnComponent doesn't found!"),
             *Controller->GetName());
         return;
     }
@@ -233,8 +225,7 @@ void ACitadelGameModeBase::StartRespawnProcess(AController* Controller)
 void ACitadelGameModeBase::FinishGame()
 {
     DisableAllPawns();
-    UE_LOG(LogTemp, Warning, TEXT("\n--- GAME OVER! ---\n"));
-    PrintPlayerStatistic();
+    UE_LOG(Log_CitadelGameModeBase, Display, TEXT("FinishGame: GAME OVER!"));
     SetMatchState(CitadelMatchState::GameOver);
 }
 
@@ -247,6 +238,8 @@ void ACitadelGameModeBase::DisableAllPawns()
         Pawn->TurnOff();
         Pawn->DisableInput(nullptr);
     }
+
+    UE_LOG(Log_CitadelGameModeBase, Log, TEXT("DisableAllPawns: All pawn inputs disabled."));
 }
 
 void ACitadelGameModeBase::SetMatchState(CitadelMatchState State)
@@ -256,4 +249,7 @@ void ACitadelGameModeBase::SetMatchState(CitadelMatchState State)
     MatchState = State;
 
     OnMatchStateChanged.Broadcast(MatchState);
+
+    UE_LOG(Log_CitadelGameModeBase, Log, TEXT("SetMatchState: MatchState has changed to '%s'"),
+        *UEnum::GetValueAsString(MatchState));
 }

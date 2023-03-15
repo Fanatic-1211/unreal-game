@@ -23,7 +23,7 @@ UMultiplayerSessionSubsystem::UMultiplayerSessionSubsystem()
 
     if (OnlineSystem) SessionInterface = OnlineSystem->GetSessionInterface();
 
-    UE_LOG(Log_MultiplayerSessionSubsystem, VeryVerbose,
+    UE_LOG(Log_MultiplayerSessionSubsystem, Verbose,
         TEXT("MultiplayerSessionSubsystem Constructor worked successfully."));
 }
 
