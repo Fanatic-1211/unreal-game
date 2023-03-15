@@ -22,8 +22,9 @@ class MULTIPLAYERSESSIONS_API UMenuMultiplayer : public UUserWidget
 public:
     // Adds widget to viewport and binds callbacks to delegates
     UFUNCTION(BlueprintCallable)
-    void MenuSetup(
-        int32 NumberOfPublicConnections = 4, FString TypeOfMatch = TEXT("FreeForAllCepk"));
+    void MenuSetup(int32 NumberOfPublicConnections = 4,
+        FString TypeOfMatch = TEXT("FreeForAllCepk"),
+        FString LobbyPath = TEXT("/Game/Levels/MultiplayerLobbyLevel"));
 
 protected:
     virtual void NativeOnInitialized() override;  // begin play analog for widgets
@@ -46,6 +47,7 @@ private:
 
     int32 NumPublicConnections = 4;  // max players in one session
     FString MatchType = TEXT("FreeForAllCepk");
+    FString PathToLobbyLevel = TEXT("");
 
     UPROPERTY(meta = (BindWidget))
     UButton* HostButton;

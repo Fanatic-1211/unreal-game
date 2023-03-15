@@ -30,8 +30,7 @@ public:
     UHealthComponent* HealthComponent;
 
     virtual void Tick(float DeltaTime) override;
-    virtual void SetupPlayerInputComponent(
-        class UInputComponent* PlayerInputComponent) override;
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
     void SetPlayerColor(FLinearColor Color);
 
     void MoveForward(float AxisValue);
@@ -72,34 +71,4 @@ private:
     void SetupHealthComponent();
     void ToggleCrouch();
     void ToggleRun();
-
-    // MULTIPLAYER
-public:
-    TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe>
-        OnlineSessionInterface;
-
-protected:
-    UFUNCTION(BlueprintCallable)
-    void CreateGameSession();
-
-    UFUNCTION(BlueprintCallable)
-    void JoinGameSession();
-
-    void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
-    void OnFindSessionsComplete(bool bWasSuccessful);
-    void OnJoinSessionComplete(
-        FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-
-private:
-    FString LobbyLevelPath = "MultiplayerLobbyLevel";
-
-    FOnCreateSessionCompleteDelegate
-        CreateSessionCompleteDelegate;  // default UE delegate (see
-                                        // documentation)
-
-    FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
-    FOnJoinSessionCompleteDelegate JoinSessionCompleteDelegate;
-
-    TSharedPtr<FOnlineSessionSearch>
-        SessionSearch;  // stores session search results etc
 };

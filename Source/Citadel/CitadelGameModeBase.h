@@ -19,13 +19,17 @@ public:
 
     FOnMatchStateChangedSignature OnMatchStateChanged;
 
-    // Default UE methods for override:
+    //
+    // DEFAULT UE METHODS FOR OVERRIDE:
+
     virtual void StartPlay() override;  // calls Begin Play on all Actors
     virtual bool ClearPause() override;
     virtual bool SetPause(
         APlayerController* PC, FCanUnpause CanUnpauseDelegate = FCanUnpause()) override;
     virtual UClass* GetDefaultPawnClassForController_Implementation(
         AController* InController) override;
+    virtual void PostLogin(APlayerController* NewPlayer) override;  // for multiplayer sessions
+    virtual void Logout(AController* Exiting) override;             // for multiplayer sessions
 
     //
     // CUSTOM METHODS:

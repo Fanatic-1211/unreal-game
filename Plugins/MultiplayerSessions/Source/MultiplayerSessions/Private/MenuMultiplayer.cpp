@@ -34,8 +34,10 @@ void UMenuMultiplayer::OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)
     Super::OnLevelRemovedFromWorld(InLevel, InWorld);
 }
 
-void UMenuMultiplayer::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch)
+void UMenuMultiplayer::MenuSetup(
+    int32 NumberOfPublicConnections, FString TypeOfMatch, FString LobbyPath)
 {
+    PathToLobbyLevel = (TEXT("%s?listen"), LobbyPath);
     NumPublicConnections = NumberOfPublicConnections;
     MatchType = TypeOfMatch;
 
@@ -119,13 +121,22 @@ void UMenuMultiplayer::OnCreateSession(bool bWasSuccessful)
             TEXT("Session created succsessfully! Starting travel to lobby level..."));
 
         if (GetWorld())
-            GetWorld()->ServerTravel(
-                "/Game/Levels/MultiplayerLobbyLevel?listen");  // TODO: remove hardcode
+        {
+            GetWorld()->ServerTravel(PathToLobbyLevel);
+        }
+        else
+        {
+            UE_LOG(
+                Log_MenuMultiplayer, Error, TEXT("OnCreateSession: Travel to lobby level failed!"));
+            return;
+        }
     }
     else
     {
         UE_LOG(Log_MenuMultiplayer, Error, TEXT("OnCreateSession: Session creation failed!"));
+        return;
     }
+    UE_LOG(Log_MenuMultiplayer, Log, TEXT("Travel to lobby level succeed!"));
 }
 
 void UMenuMultiplayer::OnStartSession(bool bWasSuccessful) {}

@@ -48,6 +48,7 @@ void UMultiplayerSessionSubsystem::CreateSession(int32 NumPublicConnections, FSt
     LastSessionSettings->bUsesPresence = true;          // use player world region for search game
     LastSessionSettings->bShouldAdvertise = true;       // allow find your session in public
     LastSessionSettings->bUseLobbiesIfAvailable = true;
+    LastSessionSettings->BuildUniqueId = 78;  // different game build versions can't see each other
     LastSessionSettings->Set(FName("MatchType"), MatchType,
         EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);  // set match type
 

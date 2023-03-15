@@ -54,7 +54,9 @@ private:
     TSharedPtr<FOnlineSessionSettings> LastSessionSettings;  // stores various settings for session
     TSharedPtr<FOnlineSessionSearch> LastSessionSearch;      // stores search results
 
-    // Default UE OnlineSubsystem delegates
+    //
+    // DEFAULT UE ONLINESUBSYSTEM DELEGATES:
+
     FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
     FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
     FOnJoinSessionCompleteDelegate JoinSessionCompleteDelegate;

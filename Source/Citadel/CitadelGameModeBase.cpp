@@ -4,6 +4,7 @@
 
 #include "AIController.h"
 #include "EngineUtils.h"
+#include "GameFramework/PlayerState.h"
 
 #include "Components/PlayerStateBase.h"
 #include "Players/PlayerGround.h"
@@ -35,6 +36,42 @@ UClass* ACitadelGameModeBase::GetDefaultPawnClassForController_Implementation(
     }
 
     return Super::GetDefaultPawnClassForController_Implementation(InController);
+}
+
+void ACitadelGameModeBase::PostLogin(APlayerController* NewPlayer)
+{
+    Super::PostLogin(NewPlayer);
+
+    APlayerState* PlayerState = NewPlayer->GetPlayerState<APlayerState>();
+    if (PlayerState)
+    {
+        FString PlayerName = PlayerState->GetPlayerName();
+
+        UE_LOG(Log_CitadelGameModeBase, Display, TEXT("%s has joined the game!"), *PlayerName);
+
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange,
+            (TEXT("%s has joined the game!"),
+                *PlayerName));  // will shown only on host machine because gamemode runs only on
+                                // server
+    }
+}
+
+void ACitadelGameModeBase::Logout(AController* Exiting)
+{
+    Super::Logout(Exiting);
+
+    APlayerState* PlayerState = Exiting->GetPlayerState<APlayerState>();
+    if (PlayerState)
+    {
+        FString PlayerName = PlayerState->GetPlayerName();
+
+        UE_LOG(Log_CitadelGameModeBase, Display, (TEXT("%s has exited the game!")), *PlayerName);
+
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange,
+            (TEXT("%s has exited the game!"),
+                *PlayerName));  // will shown only on host machine because gamemode runs only on
+                                // server
+    }
 }
 
 void ACitadelGameModeBase::ConfirmKill(AController* KillerController, AController* VictimController)
