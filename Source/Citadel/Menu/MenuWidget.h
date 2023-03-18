@@ -7,6 +7,7 @@
 #include "MenuWidget.generated.h"
 
 class UButton;
+class UMenuMultiplayer;
 
 UCLASS()
 class CITADEL_API UMenuWidget : public UUserWidget
@@ -14,16 +15,20 @@ class CITADEL_API UMenuWidget : public UUserWidget
     GENERATED_BODY()
 
 protected:
-    UPROPERTY(meta=(BindWidget))
+    UPROPERTY(meta = (BindWidget))
     UButton* StartGameButton;
-    UPROPERTY(meta=(BindWidget))
+    UPROPERTY(meta = (BindWidget))
+    UButton* PlayOnlineButton;
+    UPROPERTY(meta = (BindWidget))
     UButton* ExitGameButton;
 
     virtual void NativeOnInitialized() override;
 
 private:
     UFUNCTION()
-    void OnStartGame();
+    void OnStartGameClicked();
     UFUNCTION()
-    void OnQuitGame();
+    void OnPlayOnlineClicked();
+    UFUNCTION()
+    void OnQuitGameClicked();
 };

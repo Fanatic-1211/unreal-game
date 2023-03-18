@@ -7,25 +7,23 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 #include "CitadelGameInstance.h"
-
+#include "MenuMultiplayer.h"
 
 void UMenuWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
 
     if (StartGameButton)
-        StartGameButton->OnClicked.AddDynamic(this, &UMenuWidget::OnStartGame);
+        StartGameButton->OnClicked.AddDynamic(this, &UMenuWidget::OnStartGameClicked);
 
-    if (ExitGameButton)
-        ExitGameButton->OnClicked.AddDynamic(this, &UMenuWidget::OnQuitGame);
+    if (ExitGameButton) ExitGameButton->OnClicked.AddDynamic(this, &UMenuWidget::OnQuitGameClicked);
 }
 
-void UMenuWidget::OnStartGame()
+void UMenuWidget::OnStartGameClicked()
 {
     if (!GetWorld()) return;
 
-    UCitadelGameInstance* GameInstance =
-        GetWorld()->GetGameInstance<UCitadelGameInstance>();
+    UCitadelGameInstance* GameInstance = GetWorld()->GetGameInstance<UCitadelGameInstance>();
     if (!GameInstance) return;
 
     if (GameInstance->GetStartLevelName().IsNone())
@@ -37,8 +35,9 @@ void UMenuWidget::OnStartGame()
     UGameplayStatics::OpenLevel(this, GameInstance->GetStartLevelName());
 }
 
-void UMenuWidget::OnQuitGame()
+void UMenuWidget::OnPlayOnlineClicked() {}
+
+void UMenuWidget::OnQuitGameClicked()
 {
-    UKismetSystemLibrary::QuitGame(
-        this, GetOwningPlayer(), EQuitPreference::Quit, true);
+    UKismetSystemLibrary::QuitGame(this, GetOwningPlayer(), EQuitPreference::Quit, true);
 }
