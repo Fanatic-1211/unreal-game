@@ -7,7 +7,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 #include "CitadelGameInstance.h"
-#include "MenuMultiplayer.h"
 
 void UMenuWidget::NativeOnInitialized()
 {
@@ -34,8 +33,6 @@ void UMenuWidget::OnStartGameClicked()
 
     UGameplayStatics::OpenLevel(this, GameInstance->GetStartLevelName());
 }
-
-void UMenuWidget::OnPlayOnlineClicked() {}
 
 void UMenuWidget::OnQuitGameClicked()
 {

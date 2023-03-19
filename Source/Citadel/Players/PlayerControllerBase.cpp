@@ -10,9 +10,7 @@ void APlayerControllerBase::SetupInputComponent()
 
     if (!InputComponent) return;
 
-    InputComponent
-        ->BindAction(
-            "PauseGame", IE_Pressed, this, &APlayerControllerBase::OnPauseGame)
+    InputComponent->BindAction("PauseGame", IE_Pressed, this, &APlayerControllerBase::OnPauseGame)
         .bExecuteWhenPaused = true;
 }
 
@@ -20,13 +18,15 @@ void APlayerControllerBase::OnPauseGame()
 {
     if (!GetWorld()) return;
 
-    ACitadelGameModeBase* GameMode =
-        Cast<ACitadelGameModeBase>(GetWorld()->GetAuthGameMode());
+    ACitadelGameModeBase* GameMode = Cast<ACitadelGameModeBase>(GetWorld()->GetAuthGameMode());
 
-    if (GameMode->GetMatchState() == CitadelMatchState::Pause)
-        GameMode->ClearPause();
-    else
-        GameMode->SetPause(this);
+    if (GameMode)
+    {
+        if (GameMode->GetMatchState() == CitadelMatchState::Pause)
+            GameMode->ClearPause();
+        else
+            GameMode->SetPause(this);
+    }
 }
 
 void APlayerControllerBase::OnMatchStateChanged(CitadelMatchState State)
@@ -45,9 +45,10 @@ void APlayerControllerBase::BeginPlay()
 
     check(GetWorld());
 
-    ACitadelGameModeBase* GameMode =
-        Cast<ACitadelGameModeBase>(GetWorld()->GetAuthGameMode());
+    ACitadelGameModeBase* GameMode = Cast<ACitadelGameModeBase>(GetWorld()->GetAuthGameMode());
 
-    GameMode->OnMatchStateChanged.AddUObject(
-        this, &APlayerControllerBase::OnMatchStateChanged);
+    if (GameMode)
+    {
+        GameMode->OnMatchStateChanged.AddUObject(this, &APlayerControllerBase::OnMatchStateChanged);
+    }
 }

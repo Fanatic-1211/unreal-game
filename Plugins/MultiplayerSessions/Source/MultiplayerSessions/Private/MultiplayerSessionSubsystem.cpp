@@ -31,6 +31,10 @@ void UMultiplayerSessionSubsystem::CreateSession(int32 NumPublicConnections, FSt
 {
     if (!SessionInterface.IsValid()) return;
 
+    const FName OSSName = IOnlineSubsystem::Get()->GetSubsystemName();
+    FString OSSS = OSSName.ToString();
+    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, (TEXT("%s"), OSSS));
+
     auto ExistingSession = SessionInterface->GetNamedSession(NAME_GameSession);
     if (ExistingSession != nullptr) SessionInterface->DestroySession(NAME_GameSession);
 
@@ -96,8 +100,8 @@ void UMultiplayerSessionSubsystem::FindSessions(int32 MaxSearchResults)
         MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
     }
 
-    UE_LOG(
-        Log_MultiplayerSessionSubsystem, Log, TEXT("FindSessions: Sessions found successfully."));
+    UE_LOG(Log_MultiplayerSessionSubsystem, Log, TEXT("FindSessions: found %d active sessions."),
+        LastSessionSearch->SearchResults.Num());
 }
 
 void UMultiplayerSessionSubsystem::JoinSession(const FOnlineSessionSearchResult& SessionResult)
@@ -143,8 +147,8 @@ void UMultiplayerSessionSubsystem::OnCreateSessionComplete(FName SessionName, bo
     // Broadcast custom delegate:
     MultiplayerOnCreateSessionComplete.Broadcast(bWasSuccessful);
 
-    UE_LOG(Log_MultiplayerSessionSubsystem, Log,
-        TEXT("OnCreateSessionComplete: Session creation complete."));
+    UE_LOG(Log_MultiplayerSessionSubsystem, Verbose,
+        TEXT("OnCreateSessionComplete: Delegate has broadcasted."));
 }
 
 void UMultiplayerSessionSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
@@ -156,7 +160,7 @@ void UMultiplayerSessionSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
     if (LastSessionSearch->SearchResults.Num() <= 0)
     {
         UE_LOG(Log_MultiplayerSessionSubsystem, Error,
-            TEXT("OnFindSessionsComplete: Session search failed!"));
+            TEXT("OnFindSessionsComplete: Delegate has broadcasted FAILURE: found 0 sessions!"));
 
         MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
         return;
@@ -164,8 +168,8 @@ void UMultiplayerSessionSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
 
     MultiplayerOnFindSessionsComplete.Broadcast(LastSessionSearch->SearchResults, bWasSuccessful);
 
-    UE_LOG(Log_MultiplayerSessionSubsystem, Log,
-        TEXT("OnFindSessionsComplete: Session search complete successfully."));
+    UE_LOG(Log_MultiplayerSessionSubsystem, Verbose,
+        TEXT("OnFindSessionsComplete: Delegate has broadcasted."));
 }
 
 void UMultiplayerSessionSubsystem::OnJoinSessionComplete(
@@ -177,8 +181,8 @@ void UMultiplayerSessionSubsystem::OnJoinSessionComplete(
 
     MultiplayerOnJoinSessionComplete.Broadcast(Result);
 
-    UE_LOG(Log_MultiplayerSessionSubsystem, Log,
-        TEXT("OnJoinSessionComplete: Successfully joined to session."));
+    UE_LOG(Log_MultiplayerSessionSubsystem, Verbose,
+        TEXT("OnJoinSessionComplete: Delegate has broadcasted."));
 }
 
 void UMultiplayerSessionSubsystem::OnDestroySessionComplete(FName SessionName, bool bWasSuccessful)

@@ -18,17 +18,17 @@ void AGroundPlayerHUD::BeginPlay()
     if (WidgetHUD) WidgetPause->AddToViewport();
     if (WidgetHUD) WidgetGameOver->AddToViewport();
 
-    ACitadelGameModeBase* GameMode =
-        Cast<ACitadelGameModeBase>(GetWorld()->GetAuthGameMode());
+    ACitadelGameModeBase* GameMode = Cast<ACitadelGameModeBase>(GetWorld()->GetAuthGameMode());
 
-    GameMode->OnMatchStateChanged.AddUObject(
-        this, &AGroundPlayerHUD::OnMatchStateChanged);
+    if (GameMode)
+    {
+        GameMode->OnMatchStateChanged.AddUObject(this, &AGroundPlayerHUD::OnMatchStateChanged);
+    }
 }
 
 void AGroundPlayerHUD::OnMatchStateChanged(CitadelMatchState MatchState)
 {
-    UE_LOG(LogTemp, Display,
-        TEXT("GroundPlayerHUD has detected changinging MatchState: %s"),
+    UE_LOG(LogTemp, Display, TEXT("GroundPlayerHUD has detected changinging MatchState: %s"),
         *UEnum::GetValueAsString(MatchState));
 
     if (MatchState == CitadelMatchState::Pause)

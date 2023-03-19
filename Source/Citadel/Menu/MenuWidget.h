@@ -18,8 +18,6 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UButton* StartGameButton;
     UPROPERTY(meta = (BindWidget))
-    UButton* PlayOnlineButton;
-    UPROPERTY(meta = (BindWidget))
     UButton* ExitGameButton;
 
     virtual void NativeOnInitialized() override;
@@ -27,8 +25,6 @@ protected:
 private:
     UFUNCTION()
     void OnStartGameClicked();
-    UFUNCTION()
-    void OnPlayOnlineClicked();
     UFUNCTION()
     void OnQuitGameClicked();
 };
