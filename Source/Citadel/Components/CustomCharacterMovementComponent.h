@@ -7,21 +7,19 @@
 #include "CustomCharacterMovementComponent.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class CITADEL_API UCustomCharacterMovementComponent : public UCharacterMovementComponent
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
-	virtual float GetMaxSpeed() const override;
+    virtual float GetMaxSpeed() const override;
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category="Movement",
-			meta=(ClampMin="0"));
-	float RunningModifier = 2.f;
-	UPROPERTY(EditDefaultsOnly, Category="Movement",
-			meta=(ClampMin="0"));
-	float CrouchingModifier = 0.85f;
+    UPROPERTY(EditDefaultsOnly, Category = "Movement", meta = (ClampMin = "0"));
+    float SprintingModifier = 1.5f;
+    UPROPERTY(EditDefaultsOnly, Category = "Movement", meta = (ClampMin = "0"));
+    float CrouchingModifier = 0.4f;
 };

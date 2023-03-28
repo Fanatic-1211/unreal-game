@@ -66,16 +66,24 @@ void APlayerGround::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
     PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &APlayerGround::MoveRight);
     PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &APlayerGround::LookUp);
     PlayerInputComponent->BindAxis(TEXT("LookRight"), this, &APlayerGround::LookRight);
-    PlayerInputComponent->BindAction(
-        TEXT("Crouch"), IE_Pressed, this, &APlayerGround::ToggleCrouch);
-    PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &APlayerGround::ToggleRun);
+
     PlayerInputComponent->BindAction(
         TEXT("Fire"), IE_Pressed, WeaponComponent, &UWeaponComponent::Shoot);
     PlayerInputComponent->BindAction(
         TEXT("SwitchWeapon"), IE_Pressed, WeaponComponent, &UWeaponComponent::SwitchWeapon);
 
-    DECLARE_DELEGATE_OneParam(FZoomInputParams, bool);  // delegate is just for pass parametr into
-                                                        // Zoom-function below
+    // Stance toggling:
+    DECLARE_DELEGATE_OneParam(
+        FToggleStanceInputParams, PlayerStances);  // for pass parametr into function below
+    PlayerInputComponent->BindAction<FToggleStanceInputParams>(
+        TEXT("Crouch"), IE_Pressed, this, &APlayerGround::ToggleStance, PlayerStances::Crouching);
+    DECLARE_DELEGATE_OneParam(
+        FSprintInputParams, PlayerStances);  // for pass parametr into function below
+    PlayerInputComponent->BindAction<FSprintInputParams>(
+        TEXT("Sprint"), IE_Pressed, this, &APlayerGround::ToggleStance, PlayerStances::Sprinting);
+
+    // Zoom:
+    DECLARE_DELEGATE_OneParam(FZoomInputParams, bool);  // for pass parametr into function below
     PlayerInputComponent->BindAction<FZoomInputParams>(
         TEXT("ToggleZoom"), IE_Pressed, WeaponComponent, &UWeaponComponent::ToggleZoom, true);
     PlayerInputComponent->BindAction<FZoomInputParams>(
@@ -89,6 +97,8 @@ void APlayerGround::MoveForward(float AxisValue)
 
 void APlayerGround::MoveRight(float AxisValue)
 {
+    if (bSprinting) return;  // player can't strafe while sprinting
+
     AddMovementInput(GetActorRightVector() * AxisValue);
 }
 
@@ -102,28 +112,41 @@ void APlayerGround::LookRight(float AxisValue)
     AddControllerYawInput(AxisValue);
 }
 
-void APlayerGround::ToggleCrouch()
+void APlayerGround::ToggleStance(PlayerStances Stance)
 {
-    if (bCrouching)
+    if (Stance == PlayerStances::Crouching)
     {
-        bCrouching = false;
-        bRunning = true;
+        if (bCrouching)
+        {
+            bCrouching = false;
+            bJogging = true;
+            bSprinting = false;
+        }
+        else
+        {
+            bCrouching = true;
+            bJogging = false;
+            bSprinting = false;
+        }
     }
-    else
+
+    if (Stance == PlayerStances::Sprinting)
     {
-        bCrouching = true;
-        bRunning = false;
+        if (bSprinting)
+        {
+            bCrouching = false;
+            bJogging = true;
+            bSprinting = false;
+        }
+        else
+        {
+            bCrouching = false;
+            bJogging = false;
+            bSprinting = true;
+            ;
+        }
     }
 }
-
-void APlayerGround::ToggleRun()
-{
-    if (bCrouching == true) bCrouching = false;
-
-    (bRunning == true) ? bRunning = false : bRunning = true;
-}
-
-void APlayerGround::ToggleSprint() {}
 
 // --------------------------------------------------
 

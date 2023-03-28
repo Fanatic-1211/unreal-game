@@ -8,39 +8,38 @@
 
 class AWeaponBase;
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class CITADEL_API UWeaponComponent : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
-	UWeaponComponent();
+public:
+    // Sets default values for this component's properties
+    UWeaponComponent();
 
-	void Shoot();
-	void SwitchWeapon();
+    void Shoot();
+    void SwitchWeapon();
     void ToggleZoom(bool ZoomON);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
-	TArray<TSubclassOf<AWeaponBase>> WeaponClasses;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    TArray<TSubclassOf<AWeaponBase>> WeaponClasses;
 
-	// Called when the game starts
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    virtual void BeginPlay() override;
+
+    // Removes Weapon mesh from scene after Player's death
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
-	int32 ActiveWeaponIdx = 0;
+    int32 ActiveWeaponIdx = 0;  // index of the current weapon in hands
 
-	UPROPERTY(EditDefaultsOnly, Category="Weapon")
-	FName ActiveWeaponSocketName = TEXT("WeaponSocket_r");
-	UPROPERTY(EditDefaultsOnly, Category="Weapon")
-	FName ArmoryWeaponSocketName = TEXT("ArmorySocket");
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    FName ActiveWeaponSocketName = TEXT("WeaponSocket_r");
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    FName ArmoryWeaponSocketName = TEXT("ArmorySocket");
 
-	TArray<AWeaponBase*> CharacterWeapons;
-	AWeaponBase* ActiveWeapon;
+    TArray<AWeaponBase*> CharacterWeapons;  // weapon in inventory
+    AWeaponBase* ActiveWeapon;              // weapon in hands
 
-	void SetupWeapon();
-
+    void SetupWeapon();  // TODO: need to decompose!
 };

@@ -18,7 +18,7 @@ class UTextRenderComponent;
 class UWeaponComponent;
 
 /*
-Main Pawn for Players and bots.
+Main Pawn class for Players and bots.
 */
 UCLASS()
 class CITADEL_API APlayerGround : public ACharacter
@@ -54,7 +54,7 @@ public:
     UFUNCTION(BlueprintPure)
     bool GetCrouching() { return bCrouching; };
     UFUNCTION(BlueprintPure)
-    bool GetRunning() { return bRunning; };
+    bool GetJogginging() { return bJogging; };
     UFUNCTION(BlueprintPure)
     bool GetSprinting() { return bSprinting; };
 
@@ -74,8 +74,15 @@ protected:
 private:
     APlayerController* PlayerController;
     bool bCrouching = false;
-    bool bRunning = true;
+    bool bJogging = true;
     bool bSprinting = false;
+
+    enum PlayerStances
+    {
+        Crouching,
+        Jogging,
+        Sprinting
+    };
 
     UPROPERTY(EditAnywhere)
     UTextRenderComponent* HealthTextRender;
@@ -84,7 +91,5 @@ private:
 
     void SetupHealthComponent();
 
-    void ToggleCrouch();
-    void ToggleRun();
-    void ToggleSprint();
+    void ToggleStance(PlayerStances Stance);
 };
