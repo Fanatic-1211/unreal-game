@@ -17,6 +17,9 @@ class UHealthComponent;
 class UTextRenderComponent;
 class UWeaponComponent;
 
+/*
+Main Pawn for Players and bots.
+*/
 UCLASS()
 class CITADEL_API APlayerGround : public ACharacter
 {
@@ -31,44 +34,57 @@ public:
 
     virtual void Tick(float DeltaTime) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+    // Changes the base color inside the Pawn's Material
     void SetPlayerColor(FLinearColor Color);
+
+    //
+    // Pawn control functions
+    //
 
     void MoveForward(float AxisValue);
     void MoveRight(float AxisValue);
     void LookUp(float AxisValue);
     void LookRight(float AxisValue);
 
+    //
+    // Getters for use in AnimBP
+    //
+
     UFUNCTION(BlueprintPure)
-    bool GetCrouching() { return IsCrouching; };
+    bool GetCrouching() { return bCrouching; };
     UFUNCTION(BlueprintPure)
-    bool GetRunning() { return IsRunning; };
+    bool GetRunning() { return bRunning; };
+    UFUNCTION(BlueprintPure)
+    bool GetSprinting() { return bSprinting; };
 
     UFUNCTION(BlueprintCallable, Category = "TextRender")
     void UpdateHealthRenderText();
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Materials")
-    FName MaterialColorName = "BodyColor";  // node name into material asset
+    FName MaterialColorName =
+        "BodyColor";  // name of the node that sets the base color of the Material for the Pawn
 
     virtual void BeginPlay() override;
+
+    // Disables Pawn's collision and sets spectating mode for Player Controller
     virtual void OnDeath();
 
 private:
-    AActor* PlayerPawn;
     APlayerController* PlayerController;
-    bool IsCrouching = false;
-    bool IsRunning = true;
+    bool bCrouching = false;
+    bool bRunning = true;
+    bool bSprinting = false;
 
     UPROPERTY(EditAnywhere)
     UTextRenderComponent* HealthTextRender;
-
     UPROPERTY(EditAnywhere)
     UWeaponComponent* WeaponComponent;
 
-    UPROPERTY(EditDefaultsOnly)
-    UAnimMontage* DeathAnimMontage;
-
     void SetupHealthComponent();
+
     void ToggleCrouch();
     void ToggleRun();
+    void ToggleSprint();
 };

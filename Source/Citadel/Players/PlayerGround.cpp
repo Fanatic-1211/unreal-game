@@ -33,7 +33,6 @@ void APlayerGround::BeginPlay()
 {
     Super::BeginPlay();
     PlayerController = GetWorld()->GetFirstPlayerController();
-    PlayerPawn = PlayerController->GetPawn();
 
     SetupHealthComponent();
 }
@@ -105,24 +104,26 @@ void APlayerGround::LookRight(float AxisValue)
 
 void APlayerGround::ToggleCrouch()
 {
-    if (IsCrouching)
+    if (bCrouching)
     {
-        IsCrouching = false;
-        IsRunning = true;
+        bCrouching = false;
+        bRunning = true;
     }
     else
     {
-        IsCrouching = true;
-        IsRunning = false;
+        bCrouching = true;
+        bRunning = false;
     }
 }
 
 void APlayerGround::ToggleRun()
 {
-    if (IsCrouching == true) IsCrouching = false;
+    if (bCrouching == true) bCrouching = false;
 
-    (IsRunning == true) ? IsRunning = false : IsRunning = true;
+    (bRunning == true) ? bRunning = false : bRunning = true;
 }
+
+void APlayerGround::ToggleSprint() {}
 
 // --------------------------------------------------
 
@@ -133,15 +134,13 @@ void APlayerGround::UpdateHealthRenderText()
 
 void APlayerGround::OnDeath()
 {
-    // PlayAnimMontage(DeathAnimMontage);
-
     if (GetMesh())
     {
         GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
         GetMesh()->SetSimulatePhysics(true);
     }
 
-    if (PlayerPawn && PlayerController) GetCharacterMovement()->DisableMovement();
+    if (PlayerController) GetCharacterMovement()->DisableMovement();
 
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 

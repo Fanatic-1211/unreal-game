@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,12 +7,15 @@
 
 #include "HealthComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnDeath);  // Delegate for C++ only
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(
-    FOnDamage);  // Delegate for Blueprints and C++
+DECLARE_MULTICAST_DELEGATE(FOnDeath);           // Delegate for C++ only
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamage);  // Delegate for Blueprints and C++
 
 class UCameraShakeBase;
 
+/*
+ Сlass stores information about changes in the health and notifies other classes about player's
+ death
+ */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class CITADEL_API UHealthComponent : public UActorComponent
 {
@@ -50,9 +53,8 @@ private:
     TSubclassOf<UCameraShakeBase> CameraShaker;
 
     UFUNCTION()
-    void TakeAnyDamage(AActor* DamageActor, float Damage,
-        const class UDamageType* DamageType, class AController* InstigatedBy,
-        AActor* DamageCauser);
+    void TakeAnyDamage(AActor* DamageActor, float Damage, const class UDamageType* DamageType,
+        class AController* InstigatedBy, AActor* DamageCauser);
     void MakeFeelAIAboutIncomingDamage(float DamageAmount, AController* DamagerController);
 
     void YellAboutKill(AController* KillerController);
