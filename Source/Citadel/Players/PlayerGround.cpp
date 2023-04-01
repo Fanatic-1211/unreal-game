@@ -73,17 +73,18 @@ void APlayerGround::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
         TEXT("SwitchWeapon"), IE_Pressed, WeaponComponent, &UWeaponComponent::SwitchWeapon);
 
     // Stance toggling:
-    DECLARE_DELEGATE_OneParam(
-        FToggleStanceInputParams, PlayerStances);  // for pass parametr into function below
+    DECLARE_DELEGATE_OneParam(FToggleStanceInputParams,
+        PlayerStances);  // to pass an attribute to a function by reference below
     PlayerInputComponent->BindAction<FToggleStanceInputParams>(
         TEXT("Crouch"), IE_Pressed, this, &APlayerGround::ToggleStance, PlayerStances::Crouching);
-    DECLARE_DELEGATE_OneParam(
-        FSprintInputParams, PlayerStances);  // for pass parametr into function below
-    PlayerInputComponent->BindAction<FSprintInputParams>(
+    PlayerInputComponent->BindAction<FToggleStanceInputParams>(
         TEXT("Sprint"), IE_Pressed, this, &APlayerGround::ToggleStance, PlayerStances::Sprinting);
+    PlayerInputComponent->BindAction<FToggleStanceInputParams>(
+        TEXT("Sprint"), IE_Released, this, &APlayerGround::ToggleStance, PlayerStances::Jogging);
 
     // Zoom:
-    DECLARE_DELEGATE_OneParam(FZoomInputParams, bool);  // for pass parametr into function below
+    DECLARE_DELEGATE_OneParam(
+        FZoomInputParams, bool);  // to pass an attribute to a function by reference below
     PlayerInputComponent->BindAction<FZoomInputParams>(
         TEXT("ToggleZoom"), IE_Pressed, WeaponComponent, &UWeaponComponent::ToggleZoom, true);
     PlayerInputComponent->BindAction<FZoomInputParams>(
@@ -143,8 +144,14 @@ void APlayerGround::ToggleStance(PlayerStances Stance)
             bCrouching = false;
             bJogging = false;
             bSprinting = true;
-            ;
         }
+    }
+
+    if (Stance == PlayerStances::Jogging)
+    {
+        bCrouching = false;
+        bJogging = true;
+        bSprinting = false;
     }
 }
 
