@@ -9,6 +9,8 @@
 
 #define OUT
 
+DEFINE_LOG_CATEGORY_STATIC(Log_Weapon, All, All);
+
 // Sets default values
 AWeaponBase::AWeaponBase()
 {
@@ -16,12 +18,10 @@ AWeaponBase::AWeaponBase()
     // improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = false;
 
-    SceneComponent =
-        CreateAbstractDefaultSubobject<USceneComponent>(TEXT("Root"));
+    SceneComponent = CreateAbstractDefaultSubobject<USceneComponent>(TEXT("Root"));
     RootComponent = SceneComponent;
 
-    SkeletalMesh =
-        CreateAbstractDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+    SkeletalMesh = CreateAbstractDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
     SkeletalMesh->SetupAttachment(SceneComponent);
 }
 
@@ -48,8 +48,7 @@ void AWeaponBase::GetShotStartEndPoints(
     APawn* OwnerPawn = Cast<APawn>(GetOwner());
     if (OwnerPawn->IsPlayerControlled())
     {
-        GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-            ViewLocation, ViewRotation);
+        GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(ViewLocation, ViewRotation);
         StartPoint = ViewLocation;
     }
     else
@@ -59,14 +58,12 @@ void AWeaponBase::GetShotStartEndPoints(
     }
 
     FVector TraceDirection = ViewRotation.Vector();
-    StartPoint =
-        StartPoint + TraceDirection * 100;  // offset for avoid player collision
+    StartPoint = StartPoint + TraceDirection * 100;  // offset for avoid player collision
     EndPoint = StartPoint + TraceDirection * WeaponRange;
 
-    FCollisionQueryParams TraceParams(
-        TEXT(""), false, GetOwner());  // Ignore Owner Collision
-    GetWorld()->LineTraceSingleByChannel(OUT HitResult, StartPoint, EndPoint,
-        ECollisionChannel::ECC_Visibility, TraceParams);
+    FCollisionQueryParams TraceParams(TEXT(""), false, GetOwner());  // ignore Owner Collision
+    GetWorld()->LineTraceSingleByChannel(
+        OUT HitResult, StartPoint, EndPoint, ECollisionChannel::ECC_Visibility, TraceParams);
 }
 
 void AWeaponBase::Shoot()
@@ -79,15 +76,12 @@ void AWeaponBase::SpawnEffects()
 {
     if (MuzzleFlashParticle && ShotSound)
     {
-        UGameplayStatics::SpawnEmitterAttached(
-            MuzzleFlashParticle, SkeletalMesh, MuzzleSocketName);
-        UGameplayStatics::SpawnSoundAttached(
-            ShotSound, SkeletalMesh, MuzzleSocketName);
+        UGameplayStatics::SpawnEmitterAttached(MuzzleFlashParticle, SkeletalMesh, MuzzleSocketName);
+        UGameplayStatics::SpawnSoundAttached(ShotSound, SkeletalMesh, MuzzleSocketName);
     }
     else
     {
-        UE_LOG(LogTemp, Error,
-            TEXT("%s: Shot Sound or MuzzleFlash Effect doesn't set!"),
+        UE_LOG(Log_Weapon, Error, TEXT("%s: Shot Sound or MuzzleFlash Effect doesn't set!"),
             *this->GetName());
     }
 }
@@ -96,13 +90,12 @@ void AWeaponBase::PrintDebugInfo(FHitResult& HitResult) const
 {
     if (HitResult.bBlockingHit)
     {
-        UE_LOG(LogTemp, Display, TEXT("Pew! %s hits %s!"),
-            *GetOwner()->GetName(), *HitResult.Actor->GetName());
+        UE_LOG(Log_Weapon, VeryVerbose, TEXT("Pew! %s hits %s!"), *GetOwner()->GetName(),
+            *HitResult.Actor->GetName());
     }
     else
     {
-        UE_LOG(LogTemp, Display, TEXT("Pew! %s hits nothing!"),
-            *GetOwner()->GetName());
+        UE_LOG(Log_Weapon, VeryVerbose, TEXT("Pew! %s hits nothing!"), *GetOwner()->GetName());
         return;
     }
 }

@@ -12,37 +12,35 @@ class USkeletalMeshComponent;
 UCLASS()
 class CITADEL_API AWeaponBase : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AWeaponBase();
+    GENERATED_BODY()
 
-	virtual void Shoot();
+public:
+    // Sets default values for this actor's properties
+    AWeaponBase();
+
+    virtual void Shoot();
     virtual bool ZoomFOV(bool ZoomON) { return false; };
 
 protected:
-	UPROPERTY(EditAnywhere)
-	FName MuzzleSocketName = TEXT("Muzzle_Socket");
-	UPROPERTY(EditAnywhere)
-	USceneComponent* SceneComponent;
-	UPROPERTY(EditAnywhere)
-	USkeletalMeshComponent* SkeletalMesh;
-	UPROPERTY(EditDefaultsOnly, Category="Weapon Parameters")
-	int32 WeaponRange = 2000;
-	UPROPERTY(EditAnywhere, Category = "FX")
-	UParticleSystem* MuzzleFlashParticle;
-	UPROPERTY(EditAnywhere, Category="FX")
-	USoundBase* ShotSound;
+    AController* GetOwnerController();
 
-	virtual void SpawnEffects();
-	virtual void GetShotStartEndPoints(FHitResult& HitResult, 
-		FVector& StartPoint, FVector& EndPoint);
-	virtual void PrintDebugInfo(FHitResult& HitResult) const;
+    UPROPERTY(EditAnywhere)
+    FName MuzzleSocketName = TEXT("Muzzle_Socket");
+    UPROPERTY(EditAnywhere)
+    USceneComponent* SceneComponent;
+    UPROPERTY(EditAnywhere)
+    USkeletalMeshComponent* SkeletalMesh;
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon Parameters")
+    int32 WeaponRange = 2000;
+    UPROPERTY(EditAnywhere, Category = "FX")
+    UParticleSystem* MuzzleFlashParticle;
+    UPROPERTY(EditAnywhere, Category = "FX")
+    USoundBase* ShotSound;
 
-    // Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    virtual void SpawnEffects();
+    virtual void GetShotStartEndPoints(
+        FHitResult& HitResult, FVector& StartPoint, FVector& EndPoint);
+    virtual void PrintDebugInfo(FHitResult& HitResult) const;
 
-	AController* GetOwnerController();
-
+    virtual void BeginPlay() override;
 };

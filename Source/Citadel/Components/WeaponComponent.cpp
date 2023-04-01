@@ -63,6 +63,7 @@ void UWeaponComponent::SetupWeapon()
 void UWeaponComponent::Shoot()
 {
     APlayerGround* Player = Cast<APlayerGround>(GetOwner());
+
     if (!Player || Player->GetSprinting())
         return;  // Player can't sprint and shoot at the same time
 

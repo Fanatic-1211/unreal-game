@@ -19,9 +19,10 @@ public:
     virtual bool ZoomFOV(bool ZoomON) override;
 
 protected:
-    UPROPERTY(
-        EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Parameters")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Parameters")
     float BulletSpread = 1.5f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon Parameters")
+    float HeadshotMultiplier = 10.f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
     UNiagaraSystem* TraceFX;
@@ -33,7 +34,6 @@ protected:
 
     virtual void GetShotStartEndPoints(
         FHitResult& HitResult, FVector& StartPoint, FVector& EndPoint) override;
-
 
 private:
     UPROPERTY(EditAnywhere)

@@ -13,10 +13,12 @@
 
 #define OUT
 
+DEFINE_LOG_CATEGORY_STATIC(Log_WeaponRifle, All, All);
+
 AWeaponRifle::AWeaponRifle()
 {
-    ImpactFXComponent = CreateAbstractDefaultSubobject<UImpactFXComponent>(
-        TEXT("ImpactFXComponent"));
+    ImpactFXComponent =
+        CreateAbstractDefaultSubobject<UImpactFXComponent>(TEXT("ImpactFXComponent"));
 }
 
 void AWeaponRifle::Shoot()
@@ -27,24 +29,34 @@ void AWeaponRifle::Shoot()
     FVector TraceEnd;
     GetShotStartEndPoints(OUT RifleHitResult, OUT TraceStart, OUT TraceEnd);
 
-    APlayerGround* PlayerGroundPawn =
-        Cast<APlayerGround>(RifleHitResult.GetActor());
+    APlayerGround* PlayerGroundPawn = Cast<APlayerGround>(RifleHitResult.GetActor());
 
     if (PlayerGroundPawn)
     {
         AController* PlayerController = Cast<APawn>(GetOwner())->Controller;
 
+        UE_LOG(Log_WeaponRifle, VeryVerbose, TEXT("%s has been hit in %s!"),
+            *PlayerController->GetName(), *RifleHitResult.BoneName.ToString());
+
         if (PlayerController)
-            UGameplayStatics::ApplyDamage(PlayerGroundPawn, WeaponDamage,
-                PlayerController, this, nullptr);
+        {
+            if (RifleHitResult.BoneName == "head")  // is headshot?
+            {
+                UGameplayStatics::ApplyDamage(PlayerGroundPawn, WeaponDamage * HeadshotMultiplier,
+                    PlayerController, this, nullptr);
+            }
+            else
+            {
+                UGameplayStatics::ApplyDamage(
+                    PlayerGroundPawn, WeaponDamage, PlayerController, this, nullptr);
+            }
+        }
     }
 
     SpawnTraceFX(TraceEnd);
     ImpactFXComponent->PlayImpactFX(RifleHitResult);
 
     PrintDebugInfo(RifleHitResult);
-    // DrawDebugLine(GetWorld(), TraceStart, TraceEnd,
-    // FColor(0, 255, 0), false, 5.f, 0, 2.f);
 }
 
 void AWeaponRifle::GetShotStartEndPoints(
@@ -61,8 +73,7 @@ void AWeaponRifle::GetShotStartEndPoints(
 
 bool AWeaponRifle::ZoomFOV(bool ZoomON)
 {
-    APlayerControllerGround* PlayerController =
-        Cast<APlayerControllerGround>(GetOwnerController());
+    APlayerControllerGround* PlayerController = Cast<APlayerControllerGround>(GetOwnerController());
     if (!PlayerController) return false;
 
     const TInterval<float> FOV(50.f, 90.f);
@@ -85,9 +96,7 @@ void AWeaponRifle::SpawnTraceFX(const FVector& EndPoint)
     FVector StartPoint = SkeletalMesh->GetSocketLocation(MuzzleSocketName);
 
     const auto TraceFXComponent =
-        UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-            GetWorld(), TraceFX, StartPoint);
+        UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TraceFX, StartPoint);
 
-    if (TraceFXComponent)
-        TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, EndPoint);
+    if (TraceFXComponent) TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, EndPoint);
 }
