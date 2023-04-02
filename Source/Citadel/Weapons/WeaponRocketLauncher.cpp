@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Weapons/WeaponRocketLauncher.h"
 
 #include "Kismet/GameplayStatics.h"
@@ -21,10 +20,8 @@ void AWeaponRocketLauncher::Shoot()
 
     FTransform SpawnLocation(FRotator::ZeroRotator, StartPoint);
 
-    AWeaponProjectile* Projectile = GetWorld()->SpawnActorDeferred<AWeaponProjectile>(
-        ProjectileClass, SpawnLocation);
-    // DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor(0, 255, 0), false,
-    //     5.f, 0, 2.f);
+    AWeaponProjectile* Projectile =
+        GetWorld()->SpawnActorDeferred<AWeaponProjectile>(ProjectileClass, SpawnLocation);
 
     if (Projectile)
     {
@@ -32,4 +29,18 @@ void AWeaponRocketLauncher::Shoot()
         Projectile->SetOwner(GetOwner());
         Projectile->FinishSpawning(SpawnLocation);
     }
+}
+
+void AWeaponRocketLauncher::StartFire()
+{
+    if (bNowFiring) return;
+    bNowFiring = true;
+    Shoot();
+    GetWorldTimerManager().SetTimer(
+        DelayBetweenShotsTimerHandle, this, &ThisClass::Shoot, DelayBetweenShots, true);
+}
+
+void AWeaponRocketLauncher::StopFire()
+{
+    Super::StopFire();
 }

@@ -59,6 +59,20 @@ void AWeaponRifle::Shoot()
     PrintDebugInfo(RifleHitResult);
 }
 
+void AWeaponRifle::StartFire()
+{
+    if (bNowFiring) return;
+    bNowFiring = true;
+    Shoot();
+    GetWorldTimerManager().SetTimer(
+        DelayBetweenShotsTimerHandle, this, &ThisClass::Shoot, DelayBetweenShots, true);
+}
+
+void AWeaponRifle::StopFire()
+{
+    Super::StopFire();
+}
+
 void AWeaponRifle::GetShotStartEndPoints(
     FHitResult& HitResult, FVector& StartPoint, FVector& EndPoint)
 {

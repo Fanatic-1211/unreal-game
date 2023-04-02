@@ -61,15 +61,32 @@ void AWeaponBase::GetShotStartEndPoints(
     StartPoint = StartPoint + TraceDirection * 100;  // offset for avoid player collision
     EndPoint = StartPoint + TraceDirection * WeaponRange;
 
-    FCollisionQueryParams TraceParams(TEXT(""), false, GetOwner());  // ignore Owner Collision
+    FCollisionQueryParams TraceParams(TEXT(""), false, GetOwner());  // ignore owner collision
     GetWorld()->LineTraceSingleByChannel(
         OUT HitResult, StartPoint, EndPoint, ECollisionChannel::ECC_Visibility, TraceParams);
 }
 
 void AWeaponBase::Shoot()
 {
-    if (!GetWorld()) return;
     SpawnEffects();
+}
+
+void AWeaponBase::StartFire() {}
+
+void AWeaponBase::StopFire()
+{
+    GetWorldTimerManager().ClearTimer(DelayBetweenShotsTimerHandle);
+
+    if (!GetWorldTimerManager().TimerExists(DelayBetweenMouseClicksTimerHandle))
+    {
+        GetWorldTimerManager().SetTimer(DelayBetweenMouseClicksTimerHandle, this,
+            &AWeaponBase::Unfire, DelayBetweenShots, false);
+    }
+}
+
+void AWeaponBase::Unfire()
+{
+    bNowFiring = false;
 }
 
 void AWeaponBase::SpawnEffects()

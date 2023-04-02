@@ -17,7 +17,8 @@ public:
     // Sets default values for this component's properties
     UWeaponComponent();
 
-    void Shoot();
+    void StartFire();
+    void StopFire();
     void SwitchWeapon();
     void ToggleZoom(bool ZoomON);
 

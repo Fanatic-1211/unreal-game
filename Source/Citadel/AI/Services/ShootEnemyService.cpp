@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "AI/Services/ShootEnemyService.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
@@ -13,8 +12,8 @@ UShootEnemyService::UShootEnemyService()
     NodeName = "Shoot Enemy";
 }
 
-void UShootEnemyService::TickNode(UBehaviorTreeComponent& OwnerComp, 
-        uint8* NodeMemory, float DeltaSeconds)
+void UShootEnemyService::TickNode(
+    UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
@@ -23,11 +22,10 @@ void UShootEnemyService::TickNode(UBehaviorTreeComponent& OwnerComp,
     Blackboard = OwnerComp.GetBlackboardComponent();
     if (!Pawn || !Blackboard) return;
 
-    UWeaponComponent* WeaponComponent = Pawn->
-            FindComponentByClass<UWeaponComponent>();
-    AActor* EnemyActor = Cast<AActor>(Blackboard->GetValueAsObject(
-            EnemyActorKey.SelectedKeyName));
+    UWeaponComponent* WeaponComponent = Pawn->FindComponentByClass<UWeaponComponent>();
+    AActor* EnemyActor = Cast<AActor>(Blackboard->GetValueAsObject(EnemyActorKey.SelectedKeyName));
     if (!WeaponComponent || !EnemyActor) return;
 
-    WeaponComponent->Shoot();
+    WeaponComponent->StartFire();
+    WeaponComponent->StopFire();
 }

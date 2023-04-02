@@ -60,17 +60,29 @@ void UWeaponComponent::SetupWeapon()
         FAttachmentTransformRules::KeepRelativeTransform, ActiveWeaponSocketName);
 }
 
-void UWeaponComponent::Shoot()
+void UWeaponComponent::StartFire()
 {
     APlayerGround* Player = Cast<APlayerGround>(GetOwner());
 
     if (!Player || Player->GetSprinting())
         return;  // Player can't sprint and shoot at the same time
 
-    if (AWeaponRifle* WeaponCasted = Cast<AWeaponRifle>(ActiveWeapon)) WeaponCasted->Shoot();
+    if (AWeaponRifle* WeaponCasted = Cast<AWeaponRifle>(ActiveWeapon)) WeaponCasted->StartFire();
 
     if (AWeaponRocketLauncher* WeaponCasted = Cast<AWeaponRocketLauncher>(ActiveWeapon))
-        WeaponCasted->Shoot();
+        WeaponCasted->StartFire();
+}
+
+void UWeaponComponent::StopFire()
+{
+    APlayerGround* Player = Cast<APlayerGround>(GetOwner());
+
+    if (!Player) return;  // Player can't sprint and shoot at the same time
+
+    if (AWeaponRifle* WeaponCasted = Cast<AWeaponRifle>(ActiveWeapon)) WeaponCasted->StopFire();
+
+    if (AWeaponRocketLauncher* WeaponCasted = Cast<AWeaponRocketLauncher>(ActiveWeapon))
+        WeaponCasted->StopFire();
 }
 
 void UWeaponComponent::SwitchWeapon()

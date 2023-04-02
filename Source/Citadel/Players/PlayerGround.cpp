@@ -68,7 +68,9 @@ void APlayerGround::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
     PlayerInputComponent->BindAxis(TEXT("LookRight"), this, &APlayerGround::LookRight);
 
     PlayerInputComponent->BindAction(
-        TEXT("Fire"), IE_Pressed, WeaponComponent, &UWeaponComponent::Shoot);
+        TEXT("Fire"), IE_Pressed, WeaponComponent, &UWeaponComponent::StartFire);
+    PlayerInputComponent->BindAction(
+        TEXT("Fire"), IE_Released, WeaponComponent, &UWeaponComponent::StopFire);
     PlayerInputComponent->BindAction(
         TEXT("SwitchWeapon"), IE_Pressed, WeaponComponent, &UWeaponComponent::SwitchWeapon);
 

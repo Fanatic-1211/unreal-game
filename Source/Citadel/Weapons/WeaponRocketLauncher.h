@@ -11,18 +11,18 @@ class AWeaponProjectile;
 UCLASS()
 class CITADEL_API AWeaponRocketLauncher : public AWeaponBase
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
-	virtual void Shoot() override;
+    virtual void StartFire() override;
+    virtual void StopFire() override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Weapon")
-	TSubclassOf<AWeaponProjectile> ProjectileClass;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    TSubclassOf<AWeaponProjectile> ProjectileClass;
+
+    virtual void Shoot() override;
 
 private:
-	FHitResult HitResult;
-
-
-
+    FHitResult HitResult;
 };
