@@ -8,33 +8,41 @@
 
 class USphereComponent;
 
+/*
+Parent class for all pickup classes.
+*/
 UCLASS()
 class CITADEL_API APickupBase : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	APickupBase();
+    GENERATED_BODY()
 
-	virtual void BeginPlay() override;
+public:
+    APickupBase();
+
+    virtual void BeginPlay() override;
 
 protected:
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+    virtual void Tick(float DeltaTime) override;
+    virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;  // default UE notifier
 
-	UPROPERTY(EditDefaultsOnly)
-	float SecondsToRespawn = 5.f;
+    // Applies the pickup effect to the Pawn.
+    virtual bool GivePickupTo(APawn* Pawn);
 
-	virtual void StartRespawnCooldown();
-	virtual void Respawn();
-	virtual bool GivePickupTo(APawn* Pawn);
+    // ----------
+    // PICKUP RESPAWN
 
-	virtual void Tick(float DeltaTime) override;
+    UPROPERTY(EditDefaultsOnly)
+    float SecondsToRespawn = 5.f;
+
+    // Disables pickup collision and runs timer for call Respawn function.
+    virtual void StartRespawnCooldown();
+    // Enables pickup collision and visibility
+    virtual void Respawn();
 
 private:
-	UPROPERTY(EditAnywhere)
-	USphereComponent* Collision;
+    UPROPERTY(EditAnywhere)
+    USphereComponent* Collision;
 
-	UPROPERTY(EditAnywhere)
-	float RotationSpeed = 3.f;
+    UPROPERTY(EditAnywhere)
+    float RotationSpeed = 3.f;
 };
